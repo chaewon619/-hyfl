@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>광진구 클린거리 길잡이 - 공공 쓰레기통 위치 찾기</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS & JS for Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js for Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom Scrollbar & Animation Styles -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    #map {
+      height: 100%;
+      min-height: 400px;
+      z-index: 1;
+    }
+    /* Custom Leaflet Popup styling */
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px;
+      padding: 4px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    .leaflet-popup-content {
+      margin: 12px 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+  <!-- APP HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center text-white text-xl shadow-md shadow-brand-500/20">
+            <i class="fa-solid fa-trash-can"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">광진구 클린거리 길잡이</h1>
+            <p class="text-xs text-slate-500 hidden sm:block">공공 가로쓰레기통 위치 검색 및 설치 현황 분석 서비스</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex space-x-1 sm:space-x-2">
+          <button id="tab-btn-map" onclick="switchTab('map')" class="nav-tab active-tab px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1.5 bg-brand-50 text-brand-700">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>지도 & 검색</span>
+          </button>
+          <button id="tab-btn-analytics" onclick="switchTab('analytics')" class="nav-tab px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5">
+            <i class="fa-solid fa-chart-column"></i>
+            <span>설치 현황 분석</span>
+          </button>
+          <button id="tab-btn-guide" onclick="switchTab('guide')" class="nav-tab px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>프로젝트 개요</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
+
+    <!-- SUMMARY BAR (Problem Statement & Data Source) -->
+    <section class="mb-6 bg-gradient-to-r from-brand-600 to-teal-700 rounded-2xl p-4 sm:p-5 text-white shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center space-x-2">
+          <span class="bg-white/20 text-white text-xs px-2.5 py-0.5 rounded-full font-semibold">문제 정의</span>
+          <span class="text-xs text-brand-100">서울특별시 광진구 공공데이터 프로젝트</span>
+        </div>
+        <p class="text-sm sm:text-base font-medium leading-relaxed">
+          "길거리 보행 중 발생한 쓰레기를 쉽게 버릴 수 있도록, 주변 가로쓰레기통 위치와 동별 분포 정보를 제공합니다."
+        </p>
+      </div>
+      <div class="flex items-center space-x-3 bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-xl text-xs whitespace-nowrap self-stretch md:self-auto justify-between md:justify-start">
+        <div class="text-left">
+          <div class="text-brand-100 font-normal">기준 데이터 출처</div>
+          <div class="font-semibold text-white">서울시 광진구 가로쓰레기통 현황 (2025.03)</div>
+        </div>
+        <i class="fa-solid fa-database text-lg text-brand-200"></i>
+      </div>
+    </section>
+
+    <!-- VIEW 1: MAP & SEARCH VIEW (Default) -->
+    <div id="view-map" class="view-content flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Panel: Search, Filters & List -->
+      <div class="lg:col-span-5 flex flex-col space-y-4">
+        
+        <!-- Controls Box -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          
+          <!-- Search Bar -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="건대입구, 버스정류장, 지하철역, 상세 위치 검색..." 
+              oninput="applyFilters()"
+              class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all"
+            />
+            <button onclick="clearSearch()" id="clear-btn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Filters Row -->
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Dong Selector -->
+            <div>
+              <label for="dong-select" class="block text-xs font-semibold text-slate-500 mb-1">행정동 선택</label>
+              <select id="dong-select" onchange="applyFilters()" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option value="ALL">전체 행정동 (전체)</option>
+                <option value="화양동">화양동 (건대입구 주변)</option>
+                <option value="자양1동">자양1동</option>
+                <option value="자양2동">자양2동</option>
+                <option value="자양3동">자양3동</option>
+                <option value="자양4동">자양4동</option>
+                <option value="구의1동">구의1동</option>
+                <option value="구의2동">구의2동</option>
+                <option value="구의3동">구의3동 (강변역)</option>
+                <option value="중곡1동">중곡1동</option>
+                <option value="중곡2동">중곡2동</option>
+                <option value="중곡3동">중곡3동</option>
+                <option value="중곡4동">중곡4동 (아차산)</option>
+                <option value="능동">능동 (어린이대공원)</option>
+                <option value="광장동">광장동 (광나루역)</option>
+                <option value="군자동">군자동 (세종대 주변)</option>
+              </select>
+            </div>
+
+            <!-- Category/Type Selector -->
+            <div>
+              <label for="type-select" class="block text-xs font-semibold text-slate-500 mb-1">설치 장소 유형</label>
+              <select id="type-select" onchange="applyFilters()" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option value="ALL">전체 장소</option>
+                <option value="버스정류장">🚌 버스정류장 주변</option>
+                <option value="지하철역">🚇 지하철역 출구</option>
+                <option value="상가/번화가">🛍️ 상가 및 번화가</option>
+                <option value="횡단보도/길거리">🚶 횡단보도 및 일반 길거리</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Quick Actions Buttons -->
+          <div class="pt-1 flex items-center justify-between gap-2">
+            <button onclick="findMyLocation()" class="flex-1 py-2 px-3 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5">
+              <i class="fa-solid fa-location-crosshairs text-brand-600"></i>
+              <span>내 위치 주변 찾기</span>
+            </button>
+            <button onclick="resetFilters()" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-medium transition-colors">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Result List Section -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col overflow-hidden min-h-[350px] lg:min-h-0">
+          <!-- List Header -->
+          <div class="p-3.5 px-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+            <div class="text-xs font-bold text-slate-700">
+              검색 결과 <span id="result-count" class="text-brand-600 font-extrabold ml-1">0</span>개
+            </div>
+            <div class="text-[11px] text-slate-400">항목 클릭 시 지도 위치 이동</div>
+          </div>
+
+          <!-- List Items Container -->
+          <div id="trash-list" class="divide-y divide-slate-100 overflow-y-auto flex-1 custom-scrollbar max-h-[420px] lg:max-h-none">
+            <!-- Dynamic List Content -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Panel: Interactive Map -->
+      <div class="lg:col-span-7 flex flex-col h-[450px] lg:h-auto rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative">
+        <div id="map" class="w-full h-full"></div>
+        
+        <!-- Floating Map Map Legend -->
+        <div class="absolute bottom-4 left-4 z-[400] bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-slate-200 shadow-md text-xs space-y-1.5">
+          <div class="font-bold text-slate-700 mb-1">아이콘 범례</div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+            <span class="text-slate-600">일반/재활용 겸용 쓰레기통</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+            <span class="text-slate-600">지하철/주요 교통거점</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+            <span class="text-slate-600">내 현재 위치</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: ANALYTICS & STATS VIEW -->
+    <div id="view-analytics" class="view-content hidden flex-1 flex-col space-y-6">
+      
+      <!-- Key Statistics Summary Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">광진구 전체 쓰레기통</div>
+            <div class="text-2xl font-black text-slate-800 mt-1"><span id="stat-total-count">48</span>개 지점</div>
+            <div class="text-xs text-brand-600 font-medium mt-1">2025년 3월 공공데이터 기준</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-dumpster"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">최다 설치 행정동</div>
+            <div class="text-2xl font-black text-slate-800 mt-1">화양동 <span class="text-lg font-bold text-brand-600">(9곳)</span></div>
+            <div class="text-xs text-slate-500 mt-1">유동인구 및 상권 밀집지역</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">설치 부족/검토 지역</div>
+            <div class="text-2xl font-black text-amber-600 mt-1">중곡동·구의2동</div>
+            <div class="text-xs text-amber-700 mt-1">주택 밀집구역 대비 수량 적음</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">주요 설치 입지 유형</div>
+            <div class="text-2xl font-black text-slate-800 mt-1">버스정류장 <span class="text-lg font-bold text-indigo-600">(52%)</span></div>
+            <div class="text-xs text-slate-500 mt-1">대중교통 이용 보행자 집중</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-bus"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Chart Card -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-800">광진구 행정동별 가로쓰레기통 설치 지점 수</h2>
+            <p class="text-xs text-slate-500">각 동별 공공 쓰레기통 설치 균형 및 분포 현황 분석 그래프</p>
+          </div>
+          <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium self-start sm:self-auto">
+            단위: 개소 (2025.03.06 기준)
+          </span>
+        </div>
+
+        <!-- Chart Canvas -->
+        <div class="h-80 w-full relative">
+          <canvas id="dongChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Data Insight Analysis & Proposal Form Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Data Findings & Insights -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+            <i class="fa-solid fa-magnifying-glass-chart text-brand-600"></i>
+            <span>데이터 분석 결과 및 시사점</span>
+          </h3>
+          
+          <ul class="space-y-3 text-xs sm:text-sm text-slate-600">
+            <li class="flex items-start space-x-2.5 p-3 rounded-xl bg-slate-50">
+              <i class="fa-solid fa-check text-brand-500 mt-0.5"></i>
+              <div>
+                <strong class="text-slate-800 block mb-0.5">유동인구 중심의 편중 배치</strong>
+                건대입구역, 화양동 상권, 강변역 터미널 주변 등 보행량이 많은 지역에 쓰레기통이 집중적으로 배치되어 있습니다.
+              </div>
+            </li>
+            <li class="flex items-start space-x-2.5 p-3 rounded-xl bg-slate-50">
+              <i class="fa-solid fa-check text-brand-500 mt-0.5"></i>
+              <div>
+                <strong class="text-slate-800 block mb-0.5">주택가 보행로 쓰레기통 부족 현상</strong>
+                중곡2동, 중곡3동, 구의2동 등 주거 밀집 지역 내 주요 보행로에는 설치 수가 상대적으로 적어 음료 용기 버리기에 불편이 발생합니다.
+              </div>
+            </li>
+            <li class="flex items-start space-x-2.5 p-3 rounded-xl bg-slate-50">
+              <i class="fa-solid fa-check text-brand-500 mt-0.5"></i>
+              <div>
+                <strong class="text-slate-800 block mb-0.5">개선 방향성 제안</strong>
+                무단투기 방지를 위해 버스정류장 및 테이크아웃 음료 소비가 많은 상권 경계 구역에 균형 있는 추가 배치가 요구됩니다.
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Feedback & Additional Location Proposal Box -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+            <i class="fa-solid fa-pen-to-square text-indigo-600"></i>
+            <span>쓰레기통 추가 설치 필요 지역 의견 제안</span>
+          </h3>
+          <p class="text-xs text-slate-500">
+            일상생활 중 쓰레기통이 부족해 불편하셨던 장소를 알려주세요. 광진구 환경 개선 자료로 반영됩니다.
+          </p>
+
+          <form onsubmit="submitSuggestion(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">희망 행정동 / 위치 장소명</label>
+              <input type="text" id="prop-location" required placeholder="예: 구의2동 아차산역 3번출구 앞" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">부족 및 필요 이유</label>
+              <textarea id="prop-reason" rows="3" required placeholder="예: 테이크아웃 음료 매장은 많은데 길거리 쓰레기통이 전혀 없어 음료 컵 무단투기가 자주 발생함." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none resize-none"></textarea>
+            </div>
+            <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm">
+              의견 제출하기
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- VIEW 3: PROJECT GUIDE & OVERVIEW -->
+    <div id="view-guide" class="view-content hidden flex-1 flex-col space-y-6">
+      
+      <!-- Research Problem Definition Canvas -->
+      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+        
+        <div class="border-b border-slate-100 pb-4">
+          <span class="text-xs font-bold text-brand-600 bg-brand-50 px-3 py-1 rounded-full">STEP 1. 문제 정의</span>
+          <h2 class="text-xl font-bold text-slate-900 mt-2">탐구 프로젝트 정의서 (광진구 가로쓰레기통)</h2>
+        </div>
+
+        <!-- Problem Definition Matrix Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+            <span class="text-xs font-bold text-slate-400 uppercase">누가 (사용자)</span>
+            <p class="text-sm font-semibold text-slate-800">길거리를 이용하는 지역 주민, 보행자 및 관광객</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+            <span class="text-xs font-bold text-slate-400 uppercase">어떤 상황 및 어려움?</span>
+            <p class="text-sm font-semibold text-slate-800">길을 걷거나 음료를 마신 뒤 쓰레기를 버리려 할 때 주변에 쓰레기통이 없거나 위치를 알기 어려움.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+            <span class="text-xs font-bold text-slate-400 uppercase">현재 상태 vs 바라는 상태</span>
+            <p class="text-sm text-slate-700"><strong>[현재]</strong> 위치 파악이 어렵고 쓰레기 처리 불편 ➔ <strong>[바라는 상태]</strong> 주변 쓰레기통 위치를 즉시 확인하고 편리하게 배출</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+            <span class="text-xs font-bold text-slate-400 uppercase">데이터로 확인한 질문</span>
+            <p class="text-sm font-semibold text-slate-800">지역별 쓰레기통 설치 수량과 상대적으로 부족한 불균형 지역은 어디인가?</p>
+          </div>
+        </div>
+
+        <!-- Final Statement Callout -->
+        <div class="p-5 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-brand-200">
+          <h3 class="text-xs font-bold text-brand-800 mb-1">최종 문제 정의 문장</h3>
+          <p class="text-sm sm:text-base text-brand-900 font-medium leading-relaxed">
+            "지역 주민과 보행자는 길거리를 이용하거나 음료를 마신 뒤 쓰레기를 버리려고 하지만 주변에 공공 쓰레기통이 부족하거나 위치를 알기 어려워 불편함을 겪는다. 우리는 공공데이터를 활용해 지역별 공공 쓰레기통의 위치와 분포를 분석하여 쓰레기통이 부족한 지역을 확인하고, 주변 쓰레기통의 위치를 쉽게 찾을 수 있는 웹앱을 만든다."
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Dataset Overview Info -->
+      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">STEP 2. 활용 공공데이터</span>
+        <h3 class="text-lg font-bold text-slate-900">사용한 공공데이터 출처 및 구조</h3>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left text-slate-600 border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700">
+                <th class="p-3 border border-slate-200">구분</th>
+                <th class="p-3 border border-slate-200">주요 활용 자료 1</th>
+                <th class="p-3 border border-slate-200">참고 자료 2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-3 border border-slate-200 font-bold bg-slate-50">자료 제목</td>
+                <td class="p-3 border border-slate-200 font-semibold text-brand-700">서울특별시 광진구 가로쓰레기통 설치 현황</td>
+                <td class="p-3 border border-slate-200">서울특별시 강남구 가로쓰레기통 민원 현황</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-slate-200 font-bold bg-slate-50">제공 기관</td>
+                <td class="p-3 border border-slate-200">서울특별시 광진구청</td>
+                <td class="p-3 border border-slate-200">서울특별시 강남구청</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-slate-200 font-bold bg-slate-50">데이터 한 행의 의미</td>
+                <td class="p-3 border border-slate-200">가로 쓰레기통 설치 지점 1곳의 세부 위치 및 좌표 정보</td>
+                <td class="p-3 border border-slate-200">쓰레기통 관련 민원 접수 항목 1건</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-slate-200 font-bold bg-slate-50">웹앱 반영 기능</td>
+                <td class="p-3 border border-slate-200">지도 핀 표시, 상세주소 조회, 동별 검색, 막대그래프 시각화</td>
+                <td class="p-3 border border-slate-200">주민 불편 민원 제안 및 개선 의견 제출 폼</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4">
+      <p>서울특별시 광진구 가로쓰레기통 위치 찾기 WebApp · 학생 공공데이터 분석 프로젝트</p>
+    </div>
+  </footer>
+
+  <!-- NOTIFICATION TOAST -->
+  <div id="toast" class="fixed bottom-6 right-6 z-[1000] hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center space-x-2 transition-opacity duration-300">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+    <span id="toast-message">알림 메시지</span>
+  </div>
+
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // 1. EMBEDDED REALISTIC GWANGJIN-GU TRASH CAN DATASET
+    const trashData = [
+      // 화양동 (건대입구역 주변)
+      { id: 1, dong: "화양동", name: "건대입구역 2번출구 앞", type: "버스정류장/지하철역", detail: "건대입구역 2번출구 버스정류장 옆", lat: 37.5404, lng: 127.0692, category: "지하철역" },
+      { id: 2, dong: "화양동", name: "건대입구역 3번출구 앞", type: "지하철역", detail: "건국대학교 병원 건너편 출구", lat: 37.5408, lng: 127.0705, category: "지하철역" },
+      { id: 3, dong: "화양동", name: "건대 맛의거리 입구", type: "상가/번화가", detail: "맛의거리 메인로드 상가 입구", lat: 37.5412, lng: 127.0685, category: "상가/번화가" },
+      { id: 4, dong: "화양동", name: "건국대학교 정문 버스정류장", type: "버스정류장", detail: "건대 정문 앞 시내버스 정류소", lat: 37.5432, lng: 127.0760, category: "버스정류장" },
+      { id: 5, dong: "화양동", name: "건대입구역 5번출구", type: "지하철역", detail: "7호선 환승통로 인근 길거리", lat: 37.5395, lng: 127.0708, category: "지하철역" },
+      { id: 6, dong: "화양동", name: "화양시장 입구", type: "상가/번화가", detail: "화양골목시장 정문 앞", lat: 37.5435, lng: 127.0680, category: "상가/번화가" },
+      { id: 7, dong: "화양동", name: "화양동 주민센터 버스정류장", type: "버스정류장", detail: "주민센터 입구 버스정류소", lat: 37.5450, lng: 127.0712, category: "버스정류장" },
+      { id: 8, dong: "화양동", name: "건대 로데오거리 중앙", type: "상가/번화가", detail: "건대 로데오거리 횡단보도 앞", lat: 37.5388, lng: 127.0678, category: "상가/번화가" },
+      { id: 9, dong: "화양동", name: "어린이대공원남문 버스정류장", type: "버스정류장", detail: "어린이대공원 남문 건너편", lat: 37.5468, lng: 127.0742, category: "버스정류장" },
+
+      // 자양동 (자양1~4동)
+      { id: 10, dong: "자양1동", name: "자양사거리 횡단보도", type: "횡단보도/길거리", detail: "자양사거리 롯데리아 앞", lat: 37.5350, lng: 127.0835, category: "횡단보도/길거리" },
+      { id: 11, dong: "자양1동", name: "광진구청 정문 앞", type: "횡단보도/길거리", detail: "광진구청 버스정류장 옆", lat: 37.5385, lng: 127.0823, category: "버스정류장" },
+      { id: 12, dong: "자양1동", name: "자양골목시장 입구", type: "상가/번화가", detail: "자양전통시장 남문", lat: 37.5362, lng: 127.0852, category: "상가/번화가" },
+      { id: 13, dong: "자양2동", name: "자양미소약국 버스정류장", type: "버스정류장", detail: "자양로 시내버스 정류소", lat: 37.5305, lng: 127.0860, category: "버스정류장" },
+      { id: 14, dong: "자양2동", name: "잠실대교북단 교차로", type: "횡단보도/길거리", detail: "잠실대교북단 보행로", lat: 37.5270, lng: 127.0880, category: "횡단보도/길거리" },
+      { id: 15, dong: "자양2동", name: "자양아파트 버스정류장", type: "버스정류장", detail: "자양2동 주민센터 인근", lat: 37.5285, lng: 127.0842, category: "버스정류장" },
+      { id: 16, dong: "자양3동", name: "뚝섬유원지역 1번출구", type: "지하철역", detail: "자양동 뚝섬한강공원 연결통로", lat: 37.5318, lng: 127.0665, category: "지하철역" },
+      { id: 17, dong: "자양3동", name: "신자초교입구 버스정류장", type: "버스정류장", detail: "신자초등학교 건너편", lat: 37.5310, lng: 127.0752, category: "버스정류장" },
+      { id: 18, dong: "자양4동", name: "자양4동 주민센터 앞", type: "횡단보도/길거리", detail: "자양4동 골목 상가거리", lat: 37.5365, lng: 127.0650, category: "횡단보도/길거리" },
+      { id: 19, dong: "자양4동", name: "양꼬치거리 입구", type: "상가/번화가", detail: "동일로 양꼬치거리 시작점", lat: 37.5380, lng: 127.0635, category: "상가/번화가" },
+      { id: 20, dong: "자양4동", name: "신양초교 앞 버스정류장", type: "버스정류장", detail: "신양초등학교 정문 옆", lat: 37.5342, lng: 127.0618, category: "버스정류장" },
+
+      // 구의동 (구의1~3동)
+      { id: 21, dong: "구의1동", name: "구의역 1번출구 앞", type: "지하철역", detail: "구의역 1번출구 계단 하단", lat: 37.5372, lng: 127.0858, category: "지하철역" },
+      { id: 22, dong: "구의1동", name: "구의역 2번출구", type: "지하철역", detail: "구의 미식거리 입구", lat: 37.5368, lng: 127.0865, category: "지하철역" },
+      { id: 23, dong: "구의1동", name: "광진경찰서 버스정류장", type: "버스정류장", detail: "광진경찰서 정문 맞은편", lat: 37.5410, lng: 127.0840, category: "버스정류장" },
+      { id: 24, dong: "구의2동", name: "아차산역 2번출구", type: "지하철역", detail: "아차산역 5호선 출구", lat: 37.5452, lng: 127.0898, category: "지하철역" },
+      { id: 25, dong: "구의2동", name: "구의초등학교 버스정류장", type: "버스정류장", detail: "구의초등학교 보행로", lat: 37.5480, lng: 127.0872, category: "버스정류장" },
+      { id: 26, dong: "구의3동", name: "강변역 1번출구 버스정류장", type: "지하철역/버스정류장", detail: "강변역 A승강장 버스정류소", lat: 37.5352, lng: 127.0948, category: "지하철역" },
+      { id: 27, dong: "구의3동", name: "동서울터미널 정문", type: "상가/번화가", detail: "동서울 종합버스터미널 승차장", lat: 37.5345, lng: 127.0932, category: "상가/번화가" },
+      { id: 28, dong: "구의3동", name: "강변역 테크노마트 앞", type: "상가/번화가", detail: "테크노마트 야외 광장 옆", lat: 37.5360, lng: 127.0960, category: "상가/번화가" },
+      { id: 29, dong: "구의3동", name: "구의아파트 단지 입구", type: "횡단보도/길거리", detail: "구의3동 보행로 사거리", lat: 37.5390, lng: 127.0920, category: "횡단보도/길거리" },
+
+      // 중곡동 (중곡1~4동)
+      { id: 30, dong: "중곡1동", name: "중곡역 1번출구", type: "지하철역", detail: "7호선 중곡역 출구 앞", lat: 37.5658, lng: 127.0842, category: "지하철역" },
+      { id: 31, dong: "중곡1동", name: "중곡동입구 삼거리", type: "버스정류장", detail: "군자교 방향 버스정류소", lat: 37.5612, lng: 127.0805, category: "버스정류장" },
+      { id: 32, dong: "중곡2동", name: "중곡2동 주민센터 버스정류장", type: "버스정류장", detail: "주민센터 건물 옆", lat: 37.5582, lng: 127.0868, category: "버스정류장" },
+      { id: 33, dong: "중곡3동", name: "중곡제일시장 입구", type: "상가/번화가", detail: "중곡제일골목시장 입구", lat: 37.5685, lng: 127.0862, category: "상가/번화가" },
+      { id: 34, dong: "중곡4동", name: "아차산역 1번출구 (중곡동)", type: "지하철역", detail: "아차산 등산로 입구 방향", lat: 37.5462, lng: 127.0890, category: "지하철역" },
+      { id: 35, dong: "중곡4동", name: "신성시가지 버스정류장", type: "버스정류장", detail: "신성시가지 상가 앞", lat: 37.5535, lng: 127.0915, category: "버스정류장" },
+
+      // 능동, 광장동, 군자동
+      { id: 36, dong: "능동", name: "어린이대공원역 1번출구", type: "지하철역", detail: "어린이대공원 정문 입구", lat: 37.5482, lng: 127.0748, category: "지하철역" },
+      { id: 37, dong: "능동", name: "어린이대공원 정문 버스정류장", type: "버스정류장", detail: "공원 입구 버스 승강장", lat: 37.5478, lng: 127.0735, category: "버스정류장" },
+      { id: 38, dong: "능동", name: "군자역 6번출구 (능동)", type: "지하철역", detail: "군자역 5,7호선 환승역 출구", lat: 37.5568, lng: 127.0792, category: "지하철역" },
+      { id: 39, dong: "광장동", name: "광나루역 2번출구", type: "지하철역", detail: "5호선 광나루역 출구", lat: 37.5455, lng: 127.1035, category: "지하철역" },
+      { id: 40, dong: "광장동", name: "광장사거리 버스정류장", type: "버스정류장", detail: "광장사거리 워커힐 방향", lat: 37.5442, lng: 127.1020, category: "버스정류장" },
+      { id: 41, dong: "광장동", name: "광장초등학교 앞", type: "횡단보도/길거리", detail: "광장초등학교 어린이보호구역", lat: 37.5470, lng: 127.1012, category: "횡단보도/길거리" },
+      { id: 42, dong: "군자동", name: "세종대학교 정문", type: "횡단보도/길거리", detail: "세종대 정문 건너편", lat: 37.5505, lng: 127.0738, category: "횡단보도/길거리" },
+      { id: 43, dong: "군자동", name: "군자교입구 버스정류장", type: "버스정류장", detail: "군자교 동단 버스정류소", lat: 37.5552, lng: 127.0725, category: "버스정류장" },
+      { id: 44, dong: "군자동", name: "군자역 7번출구", type: "지하철역", detail: "군자역 CGV 영화관 인근", lat: 37.5575, lng: 127.0785, category: "지하철역" },
+      { id: 45, dong: "자양1동", name: "자양동 우체국 앞", type: "횡단보도/길거리", detail: "광진우체국 맞은편", lat: 37.5378, lng: 127.0812, category: "횡단보도/길거리" },
+      { id: 46, dong: "구의1동", name: "광진구청 뒤편 길거리", type: "횡단보도/길거리", detail: "구의동 주택가 연결 보행로", lat: 37.5398, lng: 127.0838, category: "횡단보도/길거리" },
+      { id: 47, dong: "화양동", name: "건대 느티나무공원 주변", type: "횡단보도/길거리", detail: "공원 입구 가로 쓰레기통", lat: 37.5420, lng: 127.0715, category: "횡단보도/길거리" },
+      { id: 48, dong: "자양3동", name: "자양3동 주민센터 앞", type: "횡단보도/길거리", detail: "주민센터 야외 쉼터 옆", lat: 37.5325, lng: 127.0728, category: "횡단보도/길거리" }
+    ];
+
+    // 2. APP STATE VARIABLES
+    let map;
+    let markersGroup;
+    let myLocationMarker = null;
+    let chartInstance = null;
+    let filteredData = [...trashData];
+
+    // 3. INITIALIZATION
+    window.onload = function() {
+      initMap();
+      renderList(trashData);
+      initAnalyticsChart();
+      updateStatCards();
+    };
+
+    // TAB SWITCHING LOGIC
+    function switchTab(tabName) {
+      document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.classList.remove('bg-brand-50', 'text-brand-700');
+        el.classList.add('text-slate-600');
+      });
+
+      const activeView = document.getElementById(`view-${tabName}`);
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.add('bg-brand-50', 'text-brand-700');
+        activeBtn.classList.remove('text-slate-600');
+      }
+
+      // Map resize trigger when switching back to map
+      if (tabName === 'map' && map) {
+        setTimeout(() => map.invalidateSize(), 200);
+      }
+    }
+
+    // 4. MAP INITIALIZATION & RENDER
+    function initMap() {
+      // Centered at Gwangjin-gu Office (37.5385, 127.0823)
+      map = L.map('map').setView([37.5385, 127.0823], 14);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      markersGroup = L.layerGroup().addTo(map);
+      renderMapMarkers(trashData);
+    }
+
+    // Render Markers on Map
+    function renderMapMarkers(data) {
+      markersGroup.clearLayers();
+
+      data.forEach(item => {
+        // Custom SVG Icon based on category
+        const isSubway = item.category === "지하철역";
+        const markerColor = isSubway ? "#3b82f6" : "#10b981";
+
+        const customIcon = L.divIcon({
+          className: 'custom-div-icon',
+          html: `<div style="background-color: ${markerColor};" class="w-8 h-8 rounded-full flex items-center justify-center text-white border-2 border-white shadow-lg text-xs font-bold hover:scale-110 transition-transform">
+                  <i class="fa-solid ${isSubway ? 'fa-train-subway' : 'fa-trash-can'}"></i>
+                 </div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        });
+
+        const popupContent = `
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] bg-brand-100 text-brand-800 font-bold px-2 py-0.5 rounded-full">${item.dong}</span>
+              <span class="text-[10px] text-slate-400">${item.type}</span>
+            </div>
+            <h4 class="font-bold text-slate-900 text-sm">${item.name}</h4>
+            <p class="text-xs text-slate-600">${item.detail}</p>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+              <a href="https://map.kakao.com/link/to/${encodeURIComponent(item.name)},${item.lat},${item.lng}" target="_blank" class="text-xs text-brand-600 hover:text-brand-700 font-semibold flex items-center space-x-1">
+                <i class="fa-solid fa-route"></i>
+                <span>길찾기 연결</span>
+              </a>
+            </div>
+          </div>
+        `;
+
+        const marker = L.marker([item.lat, item.lng], { icon: customIcon });
+        marker.bindPopup(popupContent);
+        markersGroup.addLayer(marker);
+      });
+    }
+
+    // 5. LIST RENDERING
+    function renderList(data) {
+      const listContainer = document.getElementById('trash-list');
+      const countEl = document.getElementById('result-count');
+      countEl.textContent = data.length;
+
+      if (data.length === 0) {
+        listContainer.innerHTML = `
+          <div class="p-8 text-center text-slate-400 text-xs">
+            <i class="fa-solid fa-dumpster-fire text-3xl mb-2 text-slate-300 block"></i>
+            검색 결과와 일치하는 가로쓰레기통이 없습니다.
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = data.map(item => `
+        <div onclick="focusLocation(${item.lat}, ${item.lng}, '${item.name}')" class="p-3.5 hover:bg-slate-50 transition-colors cursor-pointer flex items-start justify-between group">
+          <div class="space-y-1">
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">${item.dong}</span>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-brand-600 transition-colors">${item.name}</span>
+            </div>
+            <p class="text-xs text-slate-500 pl-0.5">${item.detail}</p>
+          </div>
+          <div class="text-right flex flex-col items-end justify-between">
+            <span class="text-[10px] text-brand-600 font-medium bg-brand-50 px-2 py-0.5 rounded-full border border-brand-100">${item.category}</span>
+            <span class="text-[11px] text-slate-400 mt-2 group-hover:text-slate-600">지도 보기 <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Focus Location on Map Click
+    function focusLocation(lat, lng, name) {
+      if (!map) return;
+      map.setView([lat, lng], 17, { animate: true });
+      
+      // Find matching marker and open popup
+      markersGroup.eachLayer(layer => {
+        const popup = layer.getPopup();
+        if (popup && popup.getContent().includes(name)) {
+          layer.openPopup();
+        }
+      });
+    }
+
+    // 6. FILTERING LOGIC
+    function applyFilters() {
+      const searchVal = document.getElementById('search-input').value.trim().toLowerCase();
+      const selectedDong = document.getElementById('dong-select').value;
+      const selectedType = document.getElementById('type-select').value;
+      const clearBtn = document.getElementById('clear-btn');
+
+      if (searchVal !== '') {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      filteredData = trashData.filter(item => {
+        const matchesDong = (selectedDong === 'ALL' || item.dong === selectedDong);
+        const matchesType = (selectedType === 'ALL' || item.type.includes(selectedType) || item.category.includes(selectedType));
+        const matchesSearch = (
+          item.name.toLowerCase().includes(searchVal) ||
+          item.detail.toLowerCase().includes(searchVal) ||
+          item.dong.toLowerCase().includes(searchVal)
+        );
+        return matchesDong && matchesType && matchesSearch;
+      });
+
+      renderList(filteredData);
+      renderMapMarkers(filteredData);
+    }
+
+    function clearSearch() {
+      document.getElementById('search-input').value = '';
+      applyFilters();
+    }
+
+    function resetFilters() {
+      document.getElementById('search-input').value = '';
+      document.getElementById('dong-select').value = 'ALL';
+      document.getElementById('type-select').value = 'ALL';
+      applyFilters();
+      if (map) map.setView([37.5385, 127.0823], 14);
+      showToast("검색 조건이 초기화되었습니다.");
+    }
+
+    // 7. GEOLOCATION (내 위치 찾기)
+    function findMyLocation() {
+      if (!navigator.geolocation) {
+        showToast("이 브라우저에서는 위치 서비스를 지원하지 않습니다.");
+        return;
+      }
+
+      showToast("현재 위치를 불러오는 중입니다...");
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          if (myLocationMarker) map.removeLayer(myLocationMarker);
+
+          // Add My Location Marker
+          const myIcon = L.divIcon({
+            className: 'my-loc-icon',
+            html: `<div class="w-6 h-6 rounded-full bg-rose-500 border-2 border-white shadow-lg animate-ping"></div>
+                   <div class="w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-lg absolute top-0 left-0"></div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+          });
+
+          myLocationMarker = L.marker([lat, lng], { icon: myIcon }).addTo(map);
+          myLocationMarker.bindPopup('<b class="text-xs text-rose-600">📍 현재 내 위치</b>').openPopup();
+
+          map.setView([lat, lng], 16, { animate: true });
+          showToast("현재 위치 중심으로 지도 이동 완료!");
+        },
+        () => {
+          // Fallback to Gwangjin Center if permission denied
+          map.setView([37.5385, 127.0823], 15);
+          showToast("위치 권한을 허용할 수 없어 광진구청 중심으로 이동합니다.");
+        }
+      );
+    }
+
+    // 8. CHART & STATS LOGIC
+    function initAnalyticsChart() {
+      const ctx = document.getElementById('dongChart').getContext('2d');
+      
+      // Calculate Counts per Dong
+      const dongCounts = {};
+      trashData.forEach(item => {
+        dongCounts[item.dong] = (dongCounts[item.dong] || 0) + 1;
+      });
+
+      // Sort Dongs for clean visualization
+      const sortedDongs = Object.keys(dongCounts).sort((a, b) => dongCounts[b] - dongCounts[a]);
+      const counts = sortedDongs.map(dong => dongCounts[dong]);
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sortedDongs,
+          datasets: [{
+            label: '가로쓰레기통 설치 지점 수 (곳)',
+            data: counts,
+            backgroundColor: counts.map(c => c >= 8 ? '#059669' : (c <= 2 ? '#f59e0b' : '#10b981')),
+            borderRadius: 8,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return ` 설치 수량: ${context.parsed.y}개소`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              },
+              grid: {
+                color: '#f1f5f9'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateStatCards() {
+      document.getElementById('stat-total-count').textContent = trashData.length;
+    }
+
+    // 9. PROPOSAL FORM SUBMISSION
+    function submitSuggestion(event) {
+      event.preventDefault();
+      const loc = document.getElementById('prop-location').value;
+      const reason = document.getElementById('prop-reason').value;
+
+      if (loc && reason) {
+        showToast("성공적으로 제안이 접수되었습니다! 감사드립니다.");
+        document.getElementById('prop-location').value = '';
+        document.getElementById('prop-reason').value = '';
+      }
+    }
+
+    // 10. TOAST NOTIFICATION UTILITY
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
