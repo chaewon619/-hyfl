@@ -860,3 +860,53 @@
   </script>
 </body>
 </html>
+<!-- 카카오 지도 API 호출 시 services 라이브러리가 포함되어야 주소->좌표 변환이 가능합니다. -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_API_KEY&libraries=services"></script>
+
+<script>
+// 카카오 주소->좌표 변환 객체 생성
+const geocoder = new kakao.maps.services.Geocoder();
+
+// 업로드해주신 강남구 쓰레기통 데이터 (예시 파싱 데이터)
+const gangnamTrashBins = [
+  { road: "압구정로", location: "청담톡스앤필의원", type: "일반쓰레기" },
+  { road: "압구정로", location: "청담톡스앤필의원", type: "재활용쓰레기" },
+  { road: "압구정로", location: "갤러리아(EAST점)", type: "일반쓰레기" },
+  { road: "압구정로", location: "갤러리아(EAST점)", type: "재활용쓰레기" },
+  { road: "압구정로", location: "갤러리아(WEST점)", type: "일반쓰레기" }
+  // ... 추가 데이터
+];
+
+// 강남구 데이터 주소 변환 및 지도 마커 표시 함수
+function displayGangnamMarkers(map) {
+  gangnamTrashBins.forEach(item => {
+    // 도로명 주소 생성 (서울특별시 강남구 + 도로명)
+    const address = `서울특별시 강남구 ${item.road}`;
+
+    geocoder.addressSearch(address, function(result, status) {
+      if (status === kakao.maps.services.Status.OK) {
+        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+        // 마커 생성
+        const marker = new kakao.maps.Marker({
+          map: map,
+          position: coords
+        });
+
+        // 인포윈도우 생성
+        const infowindow = new kakao.maps.InfoWindow({
+          content: `<div style="padding:5px;font-size:12px;"><b>[강남구] ${item.location}</b><br>유형: ${item.type}</div>`
+        });
+
+        // 마커 클릭 이벤트
+        kakao.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map, marker);
+        });
+      }
+    });
+  });
+}
+
+// 기존 지도 생성 함수 내부에서 호출
+// displayGangnamMarkers(map);
+</script>
