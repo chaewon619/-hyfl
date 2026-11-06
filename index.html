@@ -858,6 +858,68 @@
       }, 3000);
     }
   </script>
+
+  <!-- 클릭하면 별이 반짝이는 토끼 마스코트 -->
+  <style>
+    #bunny-mascot {
+      position: fixed; right: 22px; bottom: 14px; z-index: 9999;
+      width: 116px; height: 116px; border: 0; padding: 0;
+      background: transparent; cursor: pointer; border-radius: 50%;
+      -webkit-tap-highlight-color: transparent;
+      filter: drop-shadow(0 5px 9px rgba(190, 90, 145, .22));
+      animation: bunny-bob 3s ease-in-out infinite;
+    }
+    #bunny-mascot img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    #bunny-mascot:focus-visible { outline: 3px solid #ec4899; outline-offset: 4px; }
+    @keyframes bunny-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    .bunny-star {
+      position: fixed; z-index: 10000; pointer-events: none; color: #f5b800;
+      font-size: 23px; line-height: 1; text-shadow: 0 0 9px #ffe68a;
+      animation: bunny-star-pop 850ms ease-out forwards;
+    }
+    @keyframes bunny-star-pop {
+      0% { opacity: 0; transform: translate(0,0) scale(.25) rotate(0deg); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--star-x),var(--star-y)) scale(1.25) rotate(150deg); }
+    }
+    @media (max-width: 640px) {
+      #bunny-mascot { width: 86px; height: 86px; right: 12px; bottom: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #bunny-mascot { animation: none; }
+      .bunny-star { animation-duration: 500ms; }
+    }
+  </style>
+  <button id="bunny-mascot" type="button" aria-label="토끼 마스코트, 눌러서 별 반짝이기">
+    <img alt="하얀색 복슬복슬한 귀가 늘어진 토끼 마스코트"
+      src="data:image/webp;base64,UklGRioEAABXRUJQVlA4IB4EAADQIQCdASqAAIAAPt1ep00opSOiLhW8cRAbiWUAyeXxvboEqLuPUZtsJpl8pcD4/XtXb5TRluHhqXX3TOW+hrzk6WRdxqGxly7IeEZDeRDjeEHcbK5EWszFJOTraVp4b5xhccVvfVeENsUK2x2ORlGh2PG7WMX+tWxh0LH1wOgISzJ3B0qin4llhkrqzkcj7ChjYV0Z+vjKhjFepAthqF0bjhhpuSP57FVBk92VtWsKbQJmmxDXEgNgZ/nw1Zomsf8UzNHa6lM9ykW9Rk/Cxx8EaSPmCesgc03OTKFRMaYtkwF/s+SzA0TH+NC89eZPkKkpJNPBKQz3g8xgnIujKI1Tj97/A5H+ICV3u+Je1ziOmIQygJ5c8cgAA/pTUENJh8Xpu1/2VxobwIVf7HqZvpXAZXV5FwVeXu7mCSDVn88agMy2288U+HgE8qCElQ9+3BAVdAndTAfHMY94WDW8NDXojXiwCEjHMbre7HSxIr7KUmsrwr0GROnoatVm0VcJmrAug6K2jxzrKiKKXLqsvpGZj7+G9WR7ned/iMPdyW9zpq6sDWIdIMjOjNivgPh1zwu77keVuNO17S0XCfotwNUGDS31scxUxC9A6YViDvXkvtC5Q7x+P4jlXxiuGJv2QR6I5P7U6ysa84nvALczIM0L2vNyRdRJM9/p2jKIc7kNd8q8S3yGlzSW3ZL3xiRQQ+hSiVOinri6VLnSig+NqCmW1bf9F6GJOIEbDYdLxuZ1hCs5Dmo8PyRzZjppbgMX1WSKnlb0LS4c/pYmGqF4/1CdxwhAvR1qAHRSurTOx0qcnRG19dYvZl0tezDC9aUJgxisor4dOcQClNc26YvUh5qFV5o9AEJjzLnQ1fsuqtARmuYB9ZWduuhX2TGojIgg6lhNaJ0O5BLUzFL6kf8Xd8yPPTgvyISBMQblhNbN21Bv3EMZA/lFJI+YQR5DZvvQZAlIkKaKXgMqtPUZVasWI1DTFI+3kHrRogdiKQXQYIuo++i51tFdNoTQLo0ePj7/MkNOhkOJ1jlZIccUOvNaKbRmow7V1DM123CCD+i3KUrRK5iumNHbfXXphdixdsyHV8b3RpjWJjso6M0J6/FV4WbvbQTF6cXVd9YFXEzhjZVtI6NM8EYntBw2tetabe6eAQTHqWBvg9wRs7D8QLlZCxnqDWY0mutLjEHWUI5rhMRENyCT+6deTTB5cxbYIHmkrlc1xUtOsYNMuQkizky17nxJnUcVEXHa+f/sCue9S9oFo8KG0AGCXIEwmHo9fW2mdi3Tuid6OOHC3M8QGivgYH7CQmIz7G/tmrFYmD+ACxbK2qX/O1vco1v9KOYokH9L4RDjhHGQELboBS/1SvKLGDbkFnR2SN+pYxc7Os9L4YciAY8L7ro+WEUUrQtuAAAAA" />
+  </button>
+  <script>
+    (() => {
+      const bunny = document.getElementById('bunny-mascot');
+      if (!bunny) return;
+      bunny.addEventListener('click', () => {
+        const rect = bunny.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const symbols = ['✦', '✧', '★', '✨', '⋆', '✦', '✧'];
+        for (let i = 0; i < symbols.length; i++) {
+          const star = document.createElement('span');
+          star.className = 'bunny-star';
+          star.textContent = symbols[i];
+          star.style.left = (cx - 10 + (Math.random() * 22 - 11)) + 'px';
+          star.style.top = (cy - 10) + 'px';
+          const angle = (Math.PI * 2 * i / symbols.length) - Math.PI / 2;
+          const distance = 58 + Math.random() * 35;
+          star.style.setProperty('--star-x', (Math.cos(angle) * distance) + 'px');
+          star.style.setProperty('--star-y', (Math.sin(angle) * distance) + 'px');
+          document.body.appendChild(star);
+          star.addEventListener('animationend', () => star.remove(), { once: true });
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>
 <!-- 카카오 지도 API 호출 시 services 라이브러리가 포함되어야 주소->좌표 변환이 가능합니다. -->
