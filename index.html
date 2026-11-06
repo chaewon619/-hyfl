@@ -548,7 +548,25 @@
     // 2. APP STATE VARIABLES
     let map;
     let markersGroup;
+    let boarMarkersGroup;
+    let boarLayerVisible = false;
     let myLocationMarker = null;
+
+    // 2022~2025년 멧돼지 민원신고 현황 CSV의 자치구별 집계
+    // 좌표는 구청 인근 대표 위치이며 실제 신고 지점이 아닙니다.
+    const boarDistricts = [
+      {gu:"종로구",lat:37.5730,lng:126.9794,years:{2022:[6,0],2023:[11,11],2024:[56,56],2025:[12,12]}},
+      {gu:"은평구",lat:37.6027,lng:126.9291,years:{2022:[10,23],2023:[107,94],2024:[158,155],2025:[104,104]}},
+      {gu:"도봉구",lat:37.6688,lng:127.0471,years:{2022:[34,33],2023:[114,114],2024:[126,126],2025:[67,67]}},
+      {gu:"성북구",lat:37.5894,lng:127.0167,years:{2022:[12,12],2023:[55,55],2024:[79,79],2025:[48,48]}},
+      {gu:"강북구",lat:37.6396,lng:127.0257,years:{2022:[13,13],2023:[66,66],2025:[67,67]}},
+      {gu:"노원구",lat:37.6542,lng:127.0568,years:{2022:[15,14],2023:[17,20],2024:[32,32],2025:[37,37]}},
+      {gu:"서대문구",lat:37.5791,lng:126.9368,years:{2022:[23,10],2023:[28,9],2024:[18,2],2025:[12,12]}},
+      {gu:"중랑구",lat:37.6063,lng:127.0925,years:{2022:[28,15],2023:[17,10],2024:[9,8]}},
+      {gu:"송파구",lat:37.5145,lng:127.1058,years:{2022:[50,2]}},
+      {gu:"광진구",lat:37.5385,lng:127.0823,years:{2022:[6,6],2023:[11,2],2024:[6,0],2025:[1,1]}},
+      {gu:"강동구",lat:37.5301,lng:127.1238,years:{2022:[8,3],2023:[1,1],2024:[2,1]}}
+    ];
     let chartInstance = null;
     let filteredData = [...trashData];
 
@@ -593,7 +611,47 @@
       }).addTo(map);
 
       markersGroup = L.layerGroup().addTo(map);
+      boarMarkersGroup = L.layerGroup().addTo(map);
       renderMapMarkers(trashData);
+    }
+
+    // 멧돼지 신고 현황 레이어
+    function toggleBoarLayer() {
+      boarLayerVisible = document.getElementById('boar-toggle').checked;
+      if (boarLayerVisible) {
+        renderBoarMarkers();
+        map.fitBounds(boarDistricts.map(d => [d.lat,d.lng]), {padding:[35,35]});
+        showToast("멧돼지 구별 신고 현황을 표시합니다.");
+      } else {
+        boarMarkersGroup.clearLayers();
+        map.setView([37.5385,127.0823],14);
+      }
+    }
+
+    function renderBoarMarkers() {
+      if (!boarMarkersGroup) return;
+      boarMarkersGroup.clearLayers();
+      if (!boarLayerVisible) return;
+      const selectedYear = document.getElementById('boar-year').value;
+      boarDistricts.forEach(d => {
+        let sightings=0, captured=0;
+        const rows=[];
+        Object.entries(d.years).forEach(([year,values]) => {
+          const seen=values[0], caught=values[1];
+          if (selectedYear==='ALL' || selectedYear===year) {sightings+=seen;captured+=caught;}
+          rows.push("<div>"+year+"년: 출현 "+seen+"마리 · 포획 "+caught+"마리</div>");
+        });
+        if (selectedYear!=='ALL' && !d.years[selectedYear]) return;
+        const radius=Math.min(22,9+Math.sqrt(sightings)*1.25);
+        const marker=L.circleMarker([d.lat,d.lng],{radius:radius,color:'#92400e',weight:2,opacity:1,fillColor:'#f59e0b',fillOpacity:0.82});
+        const period=selectedYear==='ALL'?'2022~2025 누적':selectedYear+'년';
+        const popup="<div style=\"min-width:175px;font-family:Pretendard,sans-serif\">"+
+          "<div style=\"font-weight:800;font-size:14px;color:#92400e;margin-bottom:5px\">🐗 "+d.gu+" 멧돼지 신고 현황</div>"+
+          "<div style=\"font-size:12px;line-height:1.7\"><b>"+period+"</b><br>출현 개체수: <b>"+sightings+"마리</b><br>포획 개체수: <b>"+captured+"마리</b></div>"+
+          "<div style=\"border-top:1px solid #fde68a;margin-top:7px;padding-top:6px;font-size:11px;line-height:1.7\">"+rows.join("")+"</div>"+
+          "<p style=\"font-size:10px;color:#92400e;margin-top:7px\">※ 구별 월간 집계 자료이며, 마커는 구청 인근 대표 위치입니다.</p></div>";
+        marker.bindPopup(popup).addTo(boarMarkersGroup);
+      });
     }
 
     // Render Markers on Map
