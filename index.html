@@ -859,63 +859,62 @@
     }
   </script>
 
-  <!-- 클릭하면 별이 반짝이는 토끼 마스코트 -->
+
+  <!-- 상단에 앉아 있는 캥거루 마스코트 -->
   <style>
-    #bunny-mascot {
-      position: fixed; right: 22px; bottom: 14px; z-index: 9999;
-      width: 116px; height: 116px; border: 0; padding: 0;
-      background: transparent; cursor: pointer; border-radius: 50%;
+    #kangaroo-mascot {
+      position: fixed; top: 82px; right: 18px; z-index: 60;
+      width: 112px; height: 200px; padding: 0; border: 0;
+      background: transparent; cursor: pointer;
+      filter: drop-shadow(0 5px 10px rgba(90, 60, 40, .22));
+      animation: kangaroo-bob 3.2s ease-in-out infinite;
       -webkit-tap-highlight-color: transparent;
-      filter: drop-shadow(0 5px 9px rgba(190, 90, 145, .22));
-      animation: bunny-bob 3s ease-in-out infinite;
     }
-    #bunny-mascot img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    #bunny-mascot:focus-visible { outline: 3px solid #ec4899; outline-offset: 4px; }
-    @keyframes bunny-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
-    .bunny-star {
-      position: fixed; z-index: 10000; pointer-events: none; color: #f5b800;
-      font-size: 23px; line-height: 1; text-shadow: 0 0 9px #ffe68a;
-      animation: bunny-star-pop 850ms ease-out forwards;
+    #kangaroo-mascot img { display:block; width:100%; height:100%; object-fit:contain; border-radius:14px; }
+    #kangaroo-mascot:focus-visible { outline:3px solid #ec4899; outline-offset:4px; }
+    @keyframes kangaroo-bob { 0%,100% { transform:translateY(0) } 50% { transform:translateY(-5px) } }
+    .kangaroo-star {
+      position:fixed; z-index:10001; pointer-events:none; color:#f5bd22;
+      font-size:24px; line-height:1; text-shadow:0 0 9px #ffe68a;
+      animation:kangaroo-star-pop 900ms ease-out forwards;
     }
-    @keyframes bunny-star-pop {
-      0% { opacity: 0; transform: translate(0,0) scale(.25) rotate(0deg); }
-      20% { opacity: 1; }
-      100% { opacity: 0; transform: translate(var(--star-x),var(--star-y)) scale(1.25) rotate(150deg); }
+    @keyframes kangaroo-star-pop {
+      0% { opacity:0; transform:translate(0,0) scale(.25) rotate(0deg); }
+      20% { opacity:1; }
+      100% { opacity:0; transform:translate(var(--star-x),var(--star-y)) scale(1.25) rotate(150deg); }
     }
-    @media (max-width: 640px) {
-      #bunny-mascot { width: 86px; height: 86px; right: 12px; bottom: 12px; }
+    @media(max-width:640px) {
+      #kangaroo-mascot { width:78px; height:140px; top:76px; right:8px; }
     }
-    @media (prefers-reduced-motion: reduce) {
-      #bunny-mascot { animation: none; }
-      .bunny-star { animation-duration: 500ms; }
+    @media(prefers-reduced-motion:reduce) {
+      #kangaroo-mascot { animation:none; }
     }
   </style>
-  <button id="bunny-mascot" type="button" aria-label="토끼 마스코트, 눌러서 별 반짝이기">
-    <img alt="하얀색 복슬복슬한 귀가 늘어진 토끼 마스코트"
-      src="data:image/webp;base64,UklGRioEAABXRUJQVlA4IB4EAADQIQCdASqAAIAAPt1ep00opSOiLhW8cRAbiWUAyeXxvboEqLuPUZtsJpl8pcD4/XtXb5TRluHhqXX3TOW+hrzk6WRdxqGxly7IeEZDeRDjeEHcbK5EWszFJOTraVp4b5xhccVvfVeENsUK2x2ORlGh2PG7WMX+tWxh0LH1wOgISzJ3B0qin4llhkrqzkcj7ChjYV0Z+vjKhjFepAthqF0bjhhpuSP57FVBk92VtWsKbQJmmxDXEgNgZ/nw1Zomsf8UzNHa6lM9ykW9Rk/Cxx8EaSPmCesgc03OTKFRMaYtkwF/s+SzA0TH+NC89eZPkKkpJNPBKQz3g8xgnIujKI1Tj97/A5H+ICV3u+Je1ziOmIQygJ5c8cgAA/pTUENJh8Xpu1/2VxobwIVf7HqZvpXAZXV5FwVeXu7mCSDVn88agMy2288U+HgE8qCElQ9+3BAVdAndTAfHMY94WDW8NDXojXiwCEjHMbre7HSxIr7KUmsrwr0GROnoatVm0VcJmrAug6K2jxzrKiKKXLqsvpGZj7+G9WR7ned/iMPdyW9zpq6sDWIdIMjOjNivgPh1zwu77keVuNO17S0XCfotwNUGDS31scxUxC9A6YViDvXkvtC5Q7x+P4jlXxiuGJv2QR6I5P7U6ysa84nvALczIM0L2vNyRdRJM9/p2jKIc7kNd8q8S3yGlzSW3ZL3xiRQQ+hSiVOinri6VLnSig+NqCmW1bf9F6GJOIEbDYdLxuZ1hCs5Dmo8PyRzZjppbgMX1WSKnlb0LS4c/pYmGqF4/1CdxwhAvR1qAHRSurTOx0qcnRG19dYvZl0tezDC9aUJgxisor4dOcQClNc26YvUh5qFV5o9AEJjzLnQ1fsuqtARmuYB9ZWduuhX2TGojIgg6lhNaJ0O5BLUzFL6kf8Xd8yPPTgvyISBMQblhNbN21Bv3EMZA/lFJI+YQR5DZvvQZAlIkKaKXgMqtPUZVasWI1DTFI+3kHrRogdiKQXQYIuo++i51tFdNoTQLo0ePj7/MkNOhkOJ1jlZIccUOvNaKbRmow7V1DM123CCD+i3KUrRK5iumNHbfXXphdixdsyHV8b3RpjWJjso6M0J6/FV4WbvbQTF6cXVd9YFXEzhjZVtI6NM8EYntBw2tetabe6eAQTHqWBvg9wRs7D8QLlZCxnqDWY0mutLjEHWUI5rhMRENyCT+6deTTB5cxbYIHmkrlc1xUtOsYNMuQkizky17nxJnUcVEXHa+f/sCue9S9oFo8KG0AGCXIEwmHo9fW2mdi3Tuid6OOHC3M8QGivgYH7CQmIz7G/tmrFYmD+ACxbK2qX/O1vco1v9KOYokH9L4RDjhHGQELboBS/1SvKLGDbkFnR2SN+pYxc7Os9L4YciAY8L7ro+WEUUrQtuAAAAA" />
+  <button id="kangaroo-mascot" type="button" aria-label="캥거루 마스코트, 눌러서 별 반짝이기">
+    <img alt="풀밭에 서 있는 갈색 캥거루" src="data:image/webp;base64,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">
   </button>
   <script>
     (() => {
-      const bunny = document.getElementById('bunny-mascot');
-      if (!bunny) return;
-      bunny.addEventListener('click', () => {
-        const rect = bunny.getBoundingClientRect();
+      const mascot = document.getElementById('kangaroo-mascot');
+      if (!mascot) return;
+      mascot.addEventListener('click', () => {
+        const rect = mascot.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        const symbols = ['✦', '✧', '★', '✨', '⋆', '✦', '✧'];
-        for (let i = 0; i < symbols.length; i++) {
+        const symbols = ['✦','✧','★','✨','⋆','✦','✧','★'];
+        symbols.forEach((symbol, i) => {
           const star = document.createElement('span');
-          star.className = 'bunny-star';
-          star.textContent = symbols[i];
-          star.style.left = (cx - 10 + (Math.random() * 22 - 11)) + 'px';
+          star.className = 'kangaroo-star';
+          star.textContent = symbol;
+          star.style.left = (cx - 10) + 'px';
           star.style.top = (cy - 10) + 'px';
-          const angle = (Math.PI * 2 * i / symbols.length) - Math.PI / 2;
-          const distance = 58 + Math.random() * 35;
+          const angle = Math.PI * 2 * i / symbols.length - Math.PI / 2;
+          const distance = 65 + Math.random() * 40;
           star.style.setProperty('--star-x', (Math.cos(angle) * distance) + 'px');
           star.style.setProperty('--star-y', (Math.sin(angle) * distance) + 'px');
           document.body.appendChild(star);
-          star.addEventListener('animationend', () => star.remove(), { once: true });
-        }
+          star.addEventListener('animationend', () => star.remove(), {once:true});
+        });
       });
     })();
   </script>
