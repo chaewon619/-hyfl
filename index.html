@@ -120,7 +120,7 @@
           <span class="text-xs text-brand-100">서울특별시 광진구 공공데이터 프로젝트</span>
         </div>
         <p class="text-sm sm:text-base font-medium leading-relaxed">
-          "길거리 보행 중 발생한 쓰레기를 쉽게 버릴 수 있도록, 주변 가로쓰레기통 위치와 동별 분포 정보를 제공합니다."
+          "길거리 보행 중 발생한 쓰레기를 쉽게 버릴 수 있도록, 주변 가로쓰레기통 위치와 동별 분포 정보를 제공합니다. 멧돼지 예방도 가능합니다!"
         </p>
       </div>
       <div class="flex items-center space-x-3 bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-xl text-xs whitespace-nowrap self-stretch md:self-auto justify-between md:justify-start">
@@ -194,6 +194,19 @@
             </div>
           </div>
 
+          <!-- Wild boar report layer -->
+          <div class="rounded-xl border border-amber-200 bg-amber-50 p-3 space-y-2">
+            <label class="flex items-center gap-2 text-xs font-semibold text-amber-900">
+              <input id="boar-toggle" type="checkbox" onchange="toggleBoarLayer()" class="accent-amber-600 w-4 h-4">
+              <span>🐗 멧돼지 신고 현황 지도에 표시</span>
+            </label>
+            <div class="flex items-center gap-2"><label for="boar-year" class="text-[11px] text-amber-800">조회 연도</label>
+              <select id="boar-year" onchange="renderBoarMarkers()" class="flex-1 px-2 py-1.5 bg-white border border-amber-200 rounded-lg text-xs">
+                <option value="ALL">전체 기간 (2022~2025)</option><option value="2025">2025년</option><option value="2024">2024년</option><option value="2023">2023년</option><option value="2022">2022년</option>
+              </select></div>
+            <p class="text-[10px] leading-relaxed text-amber-800">구별 집계 위치이며 실제 신고 지점 좌표가 아닙니다. 제공된 자료에 포함된 11개 자치구만 표시합니다.</p>
+          </div>
+
           <!-- Quick Actions Buttons -->
           <div class="pt-1 flex items-center justify-between gap-2">
             <button onclick="findMyLocation()" class="flex-1 py-2 px-3 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5">
@@ -232,6 +245,7 @@
         <!-- Floating Map Map Legend -->
         <div class="absolute bottom-4 left-4 z-[400] bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-slate-200 shadow-md text-xs space-y-1.5">
           <div class="font-bold text-slate-700 mb-1">아이콘 범례</div>
+          <div class="flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span><span class="text-slate-600">멧돼지 출현 신고 구별 집계</span></div>
           <div class="flex items-center space-x-2">
             <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
             <span class="text-slate-600">일반/재활용 겸용 쓰레기통</span>
