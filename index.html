@@ -932,92 +932,101 @@
   </script>
 
 
-  <!-- 레트로 픽셀 아이콘 배경 장식 -->
+  <!-- 사용자가 제공한 실제 레트로 픽셀 스티커 시트에서 분리한 장식 -->
   <div class="retro-decor" aria-hidden="true">
-    <span class="retro-sticker sticker-dino"><i class="fa-solid fa-dragon"></i><small>PIXEL PET</small></span>
-    <span class="retro-sticker sticker-headphones"><i class="fa-solid fa-headphones"></i></span>
-    <span class="retro-sticker sticker-camera"><i class="fa-solid fa-camera-retro"></i><small>PHOTO</small></span>
-    <span class="retro-sticker sticker-star"><i class="fa-solid fa-star"></i></span>
-    <span class="retro-sticker sticker-music"><i class="fa-solid fa-compact-disc"></i><small>PLAY</small></span>
-    <span class="retro-sticker sticker-folder"><i class="fa-solid fa-folder-open"></i></span>
-    <span class="retro-sticker sticker-hourglass"><i class="fa-solid fa-hourglass-half"></i></span>
-    <span class="retro-sticker sticker-mail"><i class="fa-solid fa-envelope"></i><small>YOU'VE GOT MAIL</small></span>
-    <span class="retro-sticker sticker-chat"><i class="fa-regular fa-comment-dots"></i></span>
-    <span class="retro-sticker sticker-computer"><i class="fa-solid fa-desktop"></i><small>LOADING...</small></span>
+    <span class="retro-sticker s-hearts"></span>
+    <span class="retro-sticker s-speed"></span>
+    <span class="retro-sticker s-gameover"></span>
+    <span class="retro-sticker s-hourglass"></span>
+    <span class="retro-sticker s-error"></span>
+    <span class="retro-sticker s-star"></span>
+    <span class="retro-sticker s-chat"></span>
+    <span class="retro-sticker s-notes"></span>
+    <span class="retro-sticker s-star-outline"></span>
+    <span class="retro-sticker s-hearts-outline"></span>
+    <span class="retro-sticker s-cd"></span>
+    <span class="retro-sticker s-headphones"></span>
+    <span class="retro-sticker s-camera"></span>
+    <span class="retro-sticker s-soot"></span>
+    <span class="retro-sticker s-cat"></span>
   </div>
   <style>
-    body { background:#f1f2f3 !important; color:#292b30; }
-    .bg-pink-50, .bg-brand-50 { background:#f1f2f3 !important; }
-    .bg-brand-500 { background:#555960 !important; }
-    [class*="text-brand-"], [class*="text-pink-"] { color:#555960 !important; }
-    [class*="border-pink-"], [class*="border-brand-"] { border-color:#d5d7da !important; }
-    [class*="from-brand-500"] { --tw-gradient-from:#686c73 var(--tw-gradient-from-position) !important; }
-    [class*="to-pink-600"] { --tw-gradient-to:#34373d var(--tw-gradient-to-position) !important; }
-    .active-tab { background:#e5e6e8 !important; color:#34373d !important; }
-    .nav-tab:hover { background:#eceef0 !important; color:#292b30 !important; }
+    body { background:#f4f4f4 !important; color:#292929; }
+    .bg-pink-50, .bg-brand-50 { background:#f4f4f4 !important; }
+    .bg-brand-500 { background:#555 !important; }
+    [class*="text-brand-"], [class*="text-pink-"] { color:#555 !important; }
+    [class*="border-pink-"], [class*="border-brand-"] { border-color:#d5d5d5 !important; }
+    [class*="from-brand-500"] { --tw-gradient-from:#686868 var(--tw-gradient-from-position) !important; }
+    [class*="to-pink-600"] { --tw-gradient-to:#343434 var(--tw-gradient-to-position) !important; }
+    .active-tab { background:#e5e5e5 !important; color:#343434 !important; }
+    .nav-tab:hover { background:#ececec !important; color:#292929 !important; }
 
-    /* 가운데 웹앱을 좁혀 양옆에 장식이 보이는 넓은 여백 확보 */
     .retro-shell, .retro-main {
-      width:min(1080px, calc(100% - 32px)) !important;
+      width:min(1080px, calc(100% - 260px)) !important;
       max-width:1080px !important;
       margin-left:auto !important;
       margin-right:auto !important;
     }
     header.sticky {
       min-height:88px;
-      border-bottom:2px solid #c9cbd0 !important;
-      box-shadow:0 4px 0 rgba(40,42,46,.06) !important;
+      border-bottom:3px solid #c9c9c9 !important;
+      box-shadow:0 4px 0 rgba(40,40,40,.06) !important;
     }
     header.sticky > div > div { min-height:88px; height:88px !important; }
     header .rounded-xl.bg-brand-500 {
-      background:#555960 !important;
-      box-shadow:3px 3px 0 #c4c6ca !important;
+      background:#555 !important;
+      box-shadow:3px 3px 0 #c4c4c4 !important;
     }
 
-    /* 장식은 중앙 콘텐츠가 아닌 좌우 여백 안에만 배치 */
     .retro-decor {
       position:fixed; inset:88px 0 0; z-index:1;
       pointer-events:none; overflow:hidden;
     }
     .retro-sticker {
-      position:absolute; display:flex; flex-direction:column;
-      align-items:center; justify-content:center; gap:5px;
-      width:76px; min-height:70px; padding:9px 6px;
-      color:#555960; background:rgba(255,255,255,.94);
-      border:2px solid #777b82; border-radius:5px;
-      box-shadow:4px 4px 0 rgba(80,84,91,.18);
-      font-family:monospace; opacity:.9;
-      transform:rotate(var(--tilt, -5deg));
+      position:absolute; display:block; width:92px; height:92px;
+      background-image:url("data:image/webp;base64,UklGRhQ5AABXRUJQVlA4WAoAAAAQAAAAvwEAvwEAQUxQSFwIAAABDzD/ERHCrvz/rVw3fxBXOvLcO4QqZy/kPnZKnAVdufQjyHoCZ1uBl+fQiSVLZ1N6AqtzNg9HsSJVOi/otHIkZMparBaLX7EADg6gHGYi+j8B9E6vHptshMlIvAKMpGn/rlx+vLur2NbcL7NxIhqj8UuWixGRr4IT7ebb19KjyYXNMc6q4P6iPYMsr2v8X9aTNhfGcpNpLj+K9JcvtBaZDCOiKeU6uzStXWfSjG7fyoYzzLEEz/S8eWAv3zYOcbFoci3dCALfHuemyueP/adPZK4V9rMthJVeHIf+B3988zlAxIB2mulo0drWK7QBAyP3dAo7Om+yHbYaRrn9gIOFW6YcjHByiAtcYQ22sUd2zy1B0XEaf4DH8fyCb4C8WyOFAe8Z6yogaWqQ9EnrKBcaJ3AEIOQDiLFRrHASmIWgzBoAi0iHXoWuDZJWOQAI+SEn3Wd1ZE83fTOlfcMDl7JXBmhcxCNNdXKYDc1lrxaAjFiP9SUYJYgYVtIeo8NSBD4FAtoHsLe1Aetx87+gGA6EC3UbMxzg7kngMHAX9miXiPbs1NzUaY2TgR5o3QyPQ00DDbgHfgbwDYcARIjArrkmoIHWA3PIiOP221d3Hy8CBlPTjtXcFfLnOL5aYsUpoAb4o3PwXGbjYn0VmdqbGmgi5mgGGmG2+n9kuDk6b7Np4BiXa+QC8nX4hTy7XP8p4NTUrAGwyCNwTahPmMaAs0vMEpDUJXSAtMABmkmI9i/XfxKLEDA1awDNGIci4i/X/mSBgLTK3CTbiwzk0PRoyR/yiLtcPwBgKzQ1N+mlpPUARX4es5du7wRf5bsJNsml8I0XFhED4ErhKmmZ8AjcnREDRpBkFpSwWClnIt6tYW3M4KU2YkEEQQaRK5zgKg2wJkH0sV4ROU69Ch0uHj7B45L6GIAlsgwOiQTb7pFtKeqPngbPND/Gav3ULbRLeXEgXJPrh+fLNeUfAz84Rx3qB+dg+TQOhFe5HMYwoFt1Pg/KrxVRNmH21RhyhGa8PhcZT2NwIppmAxuDjdGvahn3jTtTDYL8FcS/euJE5Gt4p/F3V6Ne6xjw1ziAet3sWjWTAVtDDICmBGCJv0A45cASeKYO1LdEpFnkopirQXMowIEXwHqwiCLbz8VUWteXwAc1pXyd9+BJl0WJCJQ180MlrTNlrBJaa+ZPb9iqLOJNrquYIgsNLq1ricgliFyPJ7UaTFqn2Hh/GYILCGkdciAuAlfUP85T3MViw2fosrAIsHTzhQKc5+OB+lWSmT+tnHI2g05QAUn9w5R0mc1Q/K4MQ4fYBLuhJfVfzGUTGiLaSdCMiMyEep6ri7WUw03Icw+GUNdSS0ZkUbcR0VbCD4Z1+d773ge2Vwf378wDHxyi2x7M5RM4vZgGuhl6cI+LBL2IkY00ES9wAIQO0YFvP5NkmM92BjA1D83xOLhHzLbWCGT773rFJpHFj4bs2/5wNkhEzpZL9pHYDwb4fdvPY12opZD1ywfpxmIR+XradOPpbFgu+Q0g0PyI79N2zxQFPZb9HCrXg/db9sGdnTwYg+IDZMLjCWQDIhttUHRfP816UQJQQJOFHGhIj1xIsAkiqQONdhcRkW2JrEDCHrXZGPXEEmhCZH+cMjDNATjAptr44ITIn2d7KSAGyfE6BNuATRCF6YSmGlYYEdmDhuJOFvVoim2I7PWWykg3nMiyWkwV49oQmhok+VdJqhZJRP41zYeJSFfBiKiv4C2We+S5/WzfVKA53W5rIXv6CuKwgRoUEXURB0FEHs2rICIiXcZA/6rp2u7GHXRLcW8W3q5G1NKBVdKDxjV8BPkK5K+NIfJZ6SBGgMqmx1JtPpoBqKIbS+UjB0BkM9LzcT6ej5lsIABQ+Xi2rhqNfgMJAFhRt1RgA7wCM8ABaAtxARkTpJECblRBbYokyucDItRBkAZPUETTTJ0KyYgiItskyDEQVMVRF2pDJiBLUpGGiPqi2vL6EFhxeghtTkIArhO9ALQVMCL9yvIo7V7UYbj5SwWSyHLDifY3vON6psgvecLzI5g0ps8VeZdyUc5Mkbd5fMCHwENaEZEGhANOATkGCxgWMteJqD9s5I41p1ymbA6gAbrZ+HozCYhJHseI2kEXPLS9Y/Q4iMmQbzY4be+QPuU0QhvZjUxpvB5gREAToEFih0wN13u5x8zpe3ZD/ShghhmuVUBq4Zg/lb0MdCFFaSJk2COMSF/foIlmmk27Sc/HaGJERJon0eSZ4gaPJDd8JgqJPLuB6VZ5FKLM/mVFFHR9QFOECzQDRBE2wAc0od1xngtQ2IcobAKeZ+pHYRs6F2201agqHAARwTDIQkxAJakRfgOABshC0kOqGhkBAyC1KqEL8DRVCk+SBG5UNy2DZaAi3iyOgW9m8ABEFQ7AjSqeBUBV6Go6D1EHOTSVRN/WRatq2los2IBbi9mxdRg+tYfYSnl2vxDbeJyDp3wHhSCoUl4EL6ILtSm+lBmAVg8QRWiEWQIKMcM6QBZhh/WXK1XEzjViROQTuvPnZREe4chjTONSFPHfIS9K/ZO5qsGr7nxVxUp1gKwB6ABRzCrF47QUP6ADunJa8ikLx6rpywGSgAOgKcYmEMDs5buK2Qx1AP1hn1VAHuy2O6iCDiCieysgKKIeNfgAL2SZZG8QaTSFBCObGqKM1g8ykJXYp0QZMwy4g8xMlnE85DGy54XMhnyCW9TxYlNMOPaZE1mJxX26jt9gpiFqsGg1mhocTk7B68Dj/6AaVgCnkloKdygNkV3geKsMhFWkU0eKl2FDIjY7Rj1Uhg7xGI7AK0EpRA6cEjdYFeQKGopaulccAlqqY1WNPvljJf3JfZV06gO1cF5J/M1BVlA4IJIwAADQ2wCdASrAAcABPrFSok2nJD+iJFR7Y/AWCWlu/HyZNMc+lXRxbeYMeI/59+Mv7W/OH4l+c/1n8h/6r6Y/jPz399/un7heuhlv7Odbn5f92v4H999Bf939xPpX8cP9v1CPYnoIfNfs53V+o/7H/s/6X2CPXr6f/zP8L+Ufo5/3f+L9Tv0n/I/9L3Af59/Zf+76nf5nwi/pP/L9gP+N/1v/if3b/V/t99KP9D/0/8/+XPt9/Of9L/8P9X8Bv81/rv/m/xXt0+xT9x///7nn7Lf/EmQ+XfCBBcQCc4uIBOcXEAnOLiATnFxAJsqzVw8PkCC4XorF3dABDIBZAJzi4X0JWqmU7pVfJ3hv4Kd5sBv+Q/98B6X4lP4rEM0Lirf2EgN54KQVTw5Z955dMC1/gyV/6ytMh2ixvh3eje6Uxl5XzxK8dcDRYHyJmY6Kmq3fwzlPykpB8BY3dlW4ZQPoERzHVx+orY6rkdrbX1dlOXEH61hDINryLFOt61dwQNqEWWkXqhz23s3l8s5X/Bo1eBtgSZAsO3HyXb2+pTj05H3MU/xm/3tC5boIYtCAQj4/Ovk3LNyvImKYy4f8oYYfTsOwyCjMKBpMlm4LqScp1ZhqwkPLZHE5ctdUGmXsUM9xcRYKOZCOw3a2cY9PvA18dOZHWwO0FyHpTvDCKP6+L7E+Ori3S6F+bhxNieRGH7RqfD/gW1k+diXm0R14K//LWBVjodj3TZe6bXtlgoyKM8k4hdh8p0xKR3/1STIn9ubdjp0aIILiATmtQQ5BcQCc4teaXZGxTNIypfo6LRZ6Ip5xXIEFxAJzi4gE5xcfKLGo4ZxcQCbKvVkkzQuK5AguIBOZ3TtoFG3LgiqaX/olz0/bLlVKpzyiD9O88pOGzZnEaOBlxKQzQuGxdhk1gHlgo8KxWtX5XUyL6SY1bS7ef/wMzhwD30UKJjRFWkrFczPz7P4F4dJH/k1IUwDpakL6y8izBQR5UwlIxLtsyyrkpXgFXMgRZOj4iGExzavJtchGHo2rnvg4c0jRjP2MR5LYjDqNdpcelx3hZap2WXyLIFAdv+s+GlsFqMXsxmNDWvNdH1+yEZPnUkgwEQTTK2ttzrtTYmysaJh3FRBhdVD86gE9MjLOSrByP2oGTcVG8Aw3Sq5wlzYxNAshPqpTie6CY4x9cI/B3e2/MCiWaJDQgurd7AspstXkw2a8whCu+ciqlcE3saNCh6hDNKOjE+Zx+xLOCja08H1JYMoST3o8+quTdtBn3AWArM5PeaYeuUE13Kmo0z0yTQe2qS0ZT8gxLo3sxoiGL0ym9AMMhxRU3JFSHxvZa1PXXhAIaE+ttm1qjQyjP/pMV7VBmKmIZoXFcgQXEAe0Ryp6fhl742SZ76qdywVEfIr0t+pkqwxHN/bmTygkPkCC4Xord0cM1p9WTiuHWx3ueJQo9xKQzQuGxdhk1gHlgo8KxWtX5XUyL6SY1bS7ef/wMzhwD30UKJjRFWkrFczPz7P4F4dJH/k1IUwDpakL6y8izBQR5UwlIxLtsyyrkpXgFXMgRZOj4iGExzavJtchGHo2rnvg4c0jRjP2MR5LYjDqNdpcelx3hZap2WXyLIFAdv+s+GlsFqMXsxmNDWvNdH1+yEZPnUkgwEQTTK2ttzrtTYmysaJh3FRBhdVD86gE9MjLOSrByP2oGTcVG8Aw3Sq5wlzYxNAshPqpTie6CY4x9cI/B3e2/MCiWaJDQgurd7AspstXkw2a8whCu+ciqlcE3saNCh6hDNKOjE+Zx+xLOCja08H1JYMoST3o8+quTdtBn3AWArM5PeaYeuUE13Kmo0z0yTQe2qS0ZT8gxLo3sxoiGL0ym9AMMhxRU3JFSHxvZa1PXXhAIaE+ttm1qjQyjP/pMV7VBmKmIZoXFcgQXEAe0Ryp6fhl742SZ76qdywVEfIr0t+pkqwxHN/bmTygkPkCC4Xord0cM1p9WTiuHWx3ueJQo9xKQzQuGxdhk1gHlgo8KxWtX5XUyL6SY1bS7ef/wMzhwD30UKJjRFWkrFczPz7P4F4dJH/k1IUwDpakL6y8izBQR5UwlIxLtsyyrkpXgFXMgRZOj4iGExzavJtchGHo2rnvg4c0jRjP2MR5LYjDqNdpcelx3hZap2WXyLIFAdv+s+GlsFqMXsxmNDWvNdH1+yEZPnUkgwEQTTK2ttzrtTYmysaJh3FRBhdVD86gE9MjLOSrByP2oGTcVG8Aw3Sq5wlzYxNAshPqpTie6CY4x9cI/B3e2/MCiWaJDQgurd7AspstXkw2a8whCu+ciqlcE3saNCh6hDNKOjE+Zx+xLOCja08H1JYMoST3o8+quTdtBn3AWArM5PeaYeuUE13Kmo0z0yTQe2qS0ZT8gxLo3sxoiGL0ym9AMMhxRU3JFSHxvZa1PXXhAIaE+ttm1qjQyjP/pMV7VBmKmIZoXFcgQXEAe0Ryp6fhl742SZ76qdywVEfIr0t+pkqwxHN/bmTygkPkCC4Xord0cM1p9WTiuHWx3ueJQo9xKQzQuGxdhk1gHlgo8KxWtX5XUyL6SY1bS7ef/wMzhwD30UKJjRFWkrFczPz7P4F4dJH/k1IUwDpakL6y8izBQR5UwlIxLtsyyrkpXgFXMgRZOj4iGExzavJtchGHo2rnvg4c0jRjP2MR5LYjDqNdpcelx3hZap2WXyLIFAdv+s+GlsFqMXsxmNDWvNdH1+yEZPnUkgwEQTTK2ttzrtTYmysaJh3FRBhdVD86gE9MjLOSrByP2oGTcVG8Aw3Sq5wlzYxNAshPqpTie6CY4x9cI/B3e2/MCiWaJDQgurd7AspstXkw2a8whCu+ciqlcE3saNCh6hDNKOjE+Zx+xLOCja08H1JYMoST3o8+quTdtBn3AWArM5PeaYeuUE13Kmo0z0yTQe2qS0ZT8gxLo3sxoiGL0ym9AMMhxRU3JFSHxvZa1PXXhAIaE+ttm1qjQyjP/pMV7VBmKmIZoXFcgQXEAe0Ryp6fhl742SZ76qdywVEfIr0t+pkqwxHN/bmTygkPkCC8=");
+      background-repeat:no-repeat; background-size:368px 368px;
+      image-rendering:pixelated; filter:drop-shadow(2px 3px 1px rgba(0,0,0,.13));
+      opacity:.96;
     }
-    .retro-sticker i { font-size:clamp(24px,2.5vw,36px); }
-    .retro-sticker small {
-      font-size:8px; letter-spacing:.5px; font-weight:800;
-      white-space:nowrap;
+    .s-hearts { left:max(12px,calc(50% - 700px)); top:7%; background-position:0 0; }
+    .s-speed { right:max(12px,calc(50% - 700px)); top:7%; background-position:-92px 0; }
+    .s-gameover { left:max(12px,calc(50% - 700px)); top:23%; background-position:-184px 0; }
+    .s-hourglass { right:max(12px,calc(50% - 700px)); top:23%; background-position:0 -92px; }
+    .s-error { left:max(12px,calc(50% - 700px)); top:39%; background-position:-92px -92px; }
+    .s-star { right:max(12px,calc(50% - 700px)); top:39%; background-position:-184px -92px; }
+    .s-chat { left:max(12px,calc(50% - 700px)); top:55%; background-position:-276px -92px; }
+    .s-notes { right:max(12px,calc(50% - 700px)); top:55%; background-position:0 -184px; }
+    .s-star-outline { left:max(12px,calc(50% - 700px)); top:71%; background-position:-92px -184px; }
+    .s-hearts-outline { right:max(12px,calc(50% - 700px)); top:71%; background-position:-184px -184px; }
+    .s-cd { left:max(12px,calc(50% - 700px)); top:86%; background-position:-276px -184px; }
+    .s-headphones { right:max(12px,calc(50% - 700px)); top:86%; background-position:0 -276px; }
+    .s-camera { left:max(12px,calc(50% - 700px)); top:102%; background-position:-92px -276px; }
+    .s-soot { right:max(12px,calc(50% - 700px)); top:102%; background-position:-184px -276px; }
+    .s-cat {
+      right:max(8px,calc(50% - 700px)); top:0;
+      width:128px; height:128px; background-size:512px 512px;
+      background-position:-256px -384px;
+      border:3px solid #444; box-shadow:5px 5px 0 rgba(0,0,0,.17);
+      filter:none; opacity:1;
     }
-    .sticker-dino { top:7%; left:max(10px, calc(50% - 650px)); --tilt:-7deg; }
-    .sticker-headphones { top:22%; right:max(10px, calc(50% - 650px)); --tilt:8deg; }
-    .sticker-camera { top:39%; left:max(10px, calc(50% - 650px)); --tilt:5deg; }
-    .sticker-star { top:56%; right:max(10px, calc(50% - 650px)); --tilt:-8deg; color:#777b82; }
-    .sticker-music { top:73%; left:max(10px, calc(50% - 650px)); --tilt:7deg; }
-    .sticker-folder { top:7%; right:max(10px, calc(50% - 650px)); --tilt:-4deg; }
-    .sticker-hourglass { top:39%; right:max(10px, calc(50% - 650px)); --tilt:6deg; }
-    .sticker-mail { top:56%; left:max(10px, calc(50% - 650px)); --tilt:-6deg; }
-    .sticker-chat { top:73%; right:max(10px, calc(50% - 650px)); --tilt:-4deg; }
-    .sticker-computer { top:88%; left:max(10px, calc(50% - 650px)); --tilt:4deg; }
     main, header { position:relative; z-index:2; }
 
-    @media(max-width:1100px) {
-      .retro-sticker { width:58px; min-height:56px; padding:6px 4px; opacity:.48; }
-      .retro-sticker i { font-size:23px; }
-      .retro-sticker small { font-size:7px; }
-      .sticker-dino,.sticker-camera,.sticker-music,.sticker-mail,.sticker-computer { left:3px; }
-      .sticker-headphones,.sticker-star,.sticker-folder,.sticker-hourglass,.sticker-chat { right:3px; }
+    @media (min-width:761px) and (max-width:1100px) {
+      .retro-shell, .retro-main { width:calc(100% - 180px) !important; }
+      .retro-sticker { width:66px; height:66px; background-size:264px 264px; }
+      .s-hearts {left:4px}.s-speed {right:4px}
+      .s-gameover {left:4px}.s-hourglass {right:4px}
+      .s-error {left:4px}.s-star {right:4px}
+      .s-chat {left:4px}.s-notes {right:4px}
+      .s-star-outline {left:4px}.s-hearts-outline {right:4px}
+      .s-cd {left:4px}.s-headphones {right:4px}
+      .s-camera {left:4px}.s-soot {right:4px}
+      .s-cat {width:92px;height:92px;background-size:368px 368px;background-position:-184px -276px;right:4px}
     }
     @media(max-width:760px) {
       .retro-decor { display:none; }
-      .retro-shell, .retro-main {
-        width:calc(100% - 20px) !important;
-      }
+      .retro-shell, .retro-main { width:calc(100% - 20px) !important; }
       header.sticky > div > div { height:auto !important; min-height:88px; }
     }
   </style>
