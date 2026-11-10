@@ -32,9 +32,8 @@
     }
   </script>
 
-  <!-- Leaflet CSS & JS for Interactive Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Kakao Maps API (발급받은 자바스크립트 키 적용) -->
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=346de028a75caeafb8c3789cd95ac22c&libraries=services"></script>
 
   <!-- Chart.js for Visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -50,7 +49,7 @@
   <style>
     body {
       font-family: 'Plus Jakarta Sans', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      /* 요청하신 이미지 배경 설정 */
+      /* 지정 배경 이미지 설정 */
       background: linear-gradient(rgba(18, 2, 14, 0.75), rgba(18, 2, 14, 0.85)), url('https://chaewon619.github.io/-hyfl/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C.jpg') center/cover fixed no-repeat;
       color: #fce7f3;
     }
@@ -73,24 +72,6 @@
       height: 100%;
       min-height: 400px;
       z-index: 1;
-    }
-
-    /* Custom Leaflet Popup styling */
-    .leaflet-popup-content-wrapper {
-      border-radius: 14px;
-      padding: 4px;
-      background: rgba(26, 4, 21, 0.95);
-      border: 1px solid #ff007f;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
-      color: #ffffff;
-    }
-    .leaflet-popup-content {
-      margin: 12px 14px;
-      line-height: 1.5;
-    }
-    .leaflet-popup-tip {
-      background: rgba(26, 4, 21, 0.95);
-      border: 1px solid #ff007f;
     }
 
     /* 형광 분홍 네온 글로우 효과 */
@@ -521,7 +502,7 @@
   </div>
 
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT LOGIC (KAKAO MAPS APIS INTEGRATED) -->
   <script>
     // 1. EMBEDDED GWANGJIN-GU TRASH CAN DATASET
     const trashData = [
@@ -586,17 +567,21 @@
 
     // 2. APP STATE VARIABLES
     let map;
-    let markersGroup;
+    let mapOverlays = [];
+    let customOverlay = null;
     let myLocationMarker = null;
     let chartInstance = null;
     let filteredData = [...trashData];
 
     // 3. INITIALIZATION
     window.onload = function() {
-      initMap();
-      renderList(trashData);
-      initAnalyticsChart();
-      updateStatCards();
+      // 카카오 지도 API가 정상 탑재될 때 실행
+      kakao.maps.load(function() {
+        initMap();
+        renderList(trashData);
+        initAnalyticsChart();
+        updateStatCards();
+      });
     };
 
     // TAB SWITCHING LOGIC
@@ -616,64 +601,121 @@
         activeBtn.classList.remove('text-pink-200');
       }
 
-      // Map resize trigger when switching back to map
+      // Map resize trigger for Kakao Maps
       if (tabName === 'map' && map) {
-        setTimeout(() => map.invalidateSize(), 200);
+        setTimeout(() => {
+          map.relayout();
+          map.setCenter(new kakao.maps.LatLng(37.5385, 127.0823));
+        }, 200);
       }
     }
 
-    // 4. MAP INITIALIZATION & RENDER
+    // 4. KAKAO MAP INITIALIZATION & RENDER
     function initMap() {
-      // Centered at Gwangjin-gu Office
-      map = L.map('map').setView([37.5385, 127.0823], 14);
+      const container = document.getElementById('map');
+      const options = {
+        center: new kakao.maps.LatLng(37.5385, 127.0823),
+        level: 4
+      };
 
-      // 다크 모드 어울리는 타일 지도
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-      }).addTo(map);
-
-      markersGroup = L.layerGroup().addTo(map);
+      map = new kakao.maps.Map(container, options);
       renderMapMarkers(trashData);
     }
 
-    // Render Markers on Map
+    // Render Markers using Kakao CustomOverlay
     function renderMapMarkers(data) {
-      markersGroup.clearLayers();
+      // Clear previous overlays
+      mapOverlays.forEach(overlay => overlay.setMap(null));
+      mapOverlays = [];
+      if (customOverlay) customOverlay.setMap(null);
 
       data.forEach(item => {
+        const position = new kakao.maps.LatLng(item.lat, item.lng);
         const isSubway = item.category === "지하철역";
         const markerColor = isSubway ? "#a855f7" : "#ff007f";
 
-        const customIcon = L.divIcon({
-          className: 'custom-div-icon',
-          html: `<div style="background-color: ${markerColor}; box-shadow: 0 0 10px ${markerColor};" class="w-8 h-8 rounded-full flex items-center justify-center text-white border-2 border-white text-xs font-bold hover:scale-125 transition-transform">
-                  <i class="fa-solid ${isSubway ? 'fa-train-subway' : 'fa-trash-can'}"></i>
-                 </div>`,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16]
+        const content = document.createElement('div');
+        content.className = 'custom-marker';
+        content.style.cssText = `
+          background-color: ${markerColor};
+          box-shadow: 0 0 10px ${markerColor};
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          border: 2px solid white;
+          font-size: 12px;
+          cursor: pointer;
+          transition: transform 0.2s;
+        `;
+        content.innerHTML = `<i class="fa-solid ${isSubway ? 'fa-train-subway' : 'fa-trash-can'}"></i>`;
+        
+        content.onmouseover = () => { content.style.transform = 'scale(1.25)'; };
+        content.onmouseout = () => { content.style.transform = 'scale(1)'; };
+
+        const overlay = new kakao.maps.CustomOverlay({
+          position: position,
+          content: content,
+          yAnchor: 0.5,
+          xAnchor: 0.5
         });
 
-        const popupContent = `
-          <div class="space-y-1.5">
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-[10px] bg-pink-900/80 text-pink-200 border border-pink-500/40 font-bold px-2 py-0.5 rounded-full">${item.dong}</span>
-              <span class="text-[10px] text-pink-300">${item.type}</span>
-            </div>
-            <h4 class="font-bold text-white text-sm">${item.name}</h4>
-            <p class="text-xs text-pink-200">${item.detail}</p>
-            <div class="pt-2 border-t border-pink-500/30 flex items-center justify-between">
-              <a href="https://map.kakao.com/link/to/${encodeURIComponent(item.name)},${item.lat},${item.lng}" target="_blank" class="text-xs text-pink-400 hover:text-pink-300 font-semibold flex items-center space-x-1">
-                <i class="fa-solid fa-route"></i>
-                <span>길찾기 연결</span>
-              </a>
-            </div>
-          </div>
-        `;
+        overlay.setMap(map);
+        mapOverlays.push({ name: item.name, overlay: overlay });
 
-        const marker = L.marker([item.lat, item.lng], { icon: customIcon });
-        marker.bindPopup(popupContent);
-        markersGroup.addLayer(marker);
+        content.onclick = function() {
+          openInfoWindow(item, position);
+        };
       });
+    }
+
+    function openInfoWindow(item, position) {
+      if (customOverlay) customOverlay.setMap(null);
+
+      const overlayContent = document.createElement('div');
+      overlayContent.style.cssText = `
+        background: rgba(26, 4, 21, 0.95);
+        border: 1px solid #ff007f;
+        box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+        padding: 14px;
+        border-radius: 14px;
+        color: white;
+        min-width: 210px;
+        font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+      `;
+
+      overlayContent.innerHTML = `
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between gap-2" style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:10px; background:rgba(131,24,67,0.8); color:#fbcfe8; border:1px solid rgba(255,0,127,0.4); font-weight:bold; padding:2px 8px; border-radius:9999px;">${item.dong}</span>
+            <span style="font-size:10px; color:#f472b6;">${item.type}</span>
+          </div>
+          <h4 style="font-weight:bold; color:white; font-size:14px; margin-top:4px; margin-bottom:2px;">${item.name}</h4>
+          <p style="font-size:12px; color:#fbcfe8; margin:0;">${item.detail}</p>
+          <div style="padding-top:8px; margin-top:8px; border-top:1px solid rgba(255,0,127,0.3); display:flex; justify-content:space-between; align-items:center;">
+            <a href="https://map.kakao.com/link/to/${encodeURIComponent(item.name)},${item.lat},${item.lng}" target="_blank" style="font-size:12px; color:#f472b6; font-weight:600; text-decoration:none;">
+              <i class="fa-solid fa-route"></i> 길찾기
+            </a>
+            <button onclick="closeOverlay()" style="background:none; border:none; color:#f472b6; font-size:11px; cursor:pointer; font-weight:bold;">닫기</button>
+          </div>
+        </div>
+      `;
+
+      customOverlay = new kakao.maps.CustomOverlay({
+        content: overlayContent,
+        map: map,
+        position: position,
+        yAnchor: 1.25
+      });
+
+      map.panTo(position);
+    }
+
+    function closeOverlay() {
+      if (customOverlay) customOverlay.setMap(null);
     }
 
     // 5. LIST RENDERING
@@ -712,14 +754,14 @@
     // Focus Location on Map Click
     function focusLocation(lat, lng, name) {
       if (!map) return;
-      map.setView([lat, lng], 17, { animate: true });
-      
-      markersGroup.eachLayer(layer => {
-        const popup = layer.getPopup();
-        if (popup && popup.getContent().includes(name)) {
-          layer.openPopup();
-        }
-      });
+      const moveLatLon = new kakao.maps.LatLng(lat, lng);
+      map.setCenter(moveLatLon);
+      map.setLevel(3);
+
+      const targetItem = trashData.find(item => item.name === name);
+      if (targetItem) {
+        openInfoWindow(targetItem, moveLatLon);
+      }
     }
 
     // 6. FILTERING LOGIC
@@ -760,7 +802,10 @@
       document.getElementById('dong-select').value = 'ALL';
       document.getElementById('type-select').value = 'ALL';
       applyFilters();
-      if (map) map.setView([37.5385, 127.0823], 14);
+      if (map) {
+        map.setCenter(new kakao.maps.LatLng(37.5385, 127.0823));
+        map.setLevel(4);
+      }
       showToast("검색 조건이 초기화되었습니다.");
     }
 
@@ -777,25 +822,29 @@
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+          const locPosition = new kakao.maps.LatLng(lat, lng);
 
-          if (myLocationMarker) map.removeLayer(myLocationMarker);
+          if (myLocationMarker) myLocationMarker.setMap(null);
 
-          const myIcon = L.divIcon({
-            className: 'my-loc-icon',
-            html: `<div class="w-6 h-6 rounded-full bg-rose-500 border-2 border-white shadow-lg animate-ping"></div>
-                   <div class="w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-lg absolute top-0 left-0"></div>`,
-            iconSize: [24, 24],
-            iconAnchor: [12, 12]
+          const content = document.createElement('div');
+          content.style.position = 'relative';
+          content.innerHTML = `<div class="w-6 h-6 rounded-full bg-rose-500 border-2 border-white shadow-lg animate-ping"></div>
+                               <div class="w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-lg absolute top-0 left-0"></div>`;
+
+          myLocationMarker = new kakao.maps.CustomOverlay({
+            map: map,
+            position: locPosition,
+            content: content,
+            yAnchor: 0.5,
+            xAnchor: 0.5
           });
 
-          myLocationMarker = L.marker([lat, lng], { icon: myIcon }).addTo(map);
-          myLocationMarker.bindPopup('<b class="text-xs text-pink-300">📍 현재 내 위치</b>').openPopup();
-
-          map.setView([lat, lng], 16, { animate: true });
+          map.setCenter(locPosition);
+          map.setLevel(3);
           showToast("현재 위치 중심으로 지도 이동 완료!");
         },
         () => {
-          map.setView([37.5385, 127.0823], 15);
+          map.setCenter(new kakao.maps.LatLng(37.5385, 127.0823));
           showToast("위치 권한을 허용할 수 없어 광진구청 중심으로 이동합니다.");
         }
       );
