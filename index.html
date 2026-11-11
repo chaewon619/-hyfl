@@ -106,68 +106,66 @@
       .character-avatar { animation: none; }
     }
 
-    /* User-supplied mascot set: all decorative art comes from the seven uploaded images. */
+    /* Three mascots supplied by the user; Will Smith remains on the map. */
     .mascot-parade {
-      position: absolute; left: 33%; right: 29%; top: -2px; height: 72px;
-      display: flex; align-items: center; justify-content: center; gap: 5px;
-      pointer-events: none; z-index: 1; overflow: visible;
+      position:absolute; left:35%; right:31%; top:-2px; height:72px;
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      pointer-events:auto; z-index:11; overflow:visible;
     }
     .header-mascot, .brand-mascot {
-      background-image: url('./assets/mascot-strip.webp');
-      background-repeat: no-repeat; background-size: 700% 100%;
-      background-position: center;
-    }
-    .map-man {
-      position: absolute; z-index: 5; pointer-events: none;
-      left: 18px; bottom: 66px; width: 138px; height: 190px;
-      background-image: url('./assets/map-man.webp');
-      background-repeat: no-repeat; background-size: contain; background-position: center bottom;
-      filter: drop-shadow(0 5px 7px rgba(25, 4, 18, .38)); opacity: .98;
+      display:block; padding:0; border:0; background-color:transparent;
+      background-image:url('./assets/mascot-strip.webp');
+      background-repeat:no-repeat; background-size:300% 100%;
+      cursor:pointer; transform-origin:center center;
+      filter:drop-shadow(0 4px 6px rgba(255,145,190,.38));
+      animation:mascot-idle 3.1s ease-in-out infinite;
+      -webkit-tap-highlight-color:transparent;
     }
     .header-mascot {
-      display: block; flex: 0 0 56px; width: 56px; height: 56px;
-      background-size: 700% 100%; border-radius: 50%;
-      filter: drop-shadow(0 4px 5px rgba(255, 150, 195, .38));
-      animation: mascot-float 3.2s ease-in-out infinite;
+      flex:0 0 58px; width:58px; height:58px;
+      background-position:0% 50%;
     }
-    .header-mascot:nth-child(2) { animation-delay: -.45s; transform: translateY(7px); }
-    .header-mascot:nth-child(3) { animation-delay: -.9s; transform: translateY(-2px); }
-    .header-mascot:nth-child(4) { animation-delay: -1.35s; transform: translateY(5px); }
-    .header-mascot:nth-child(5) { animation-delay: -1.8s; transform: translateY(-3px); }
-    .header-mascot:nth-child(6) { animation-delay: -2.25s; transform: translateY(6px); }
-    .mascot-1 { background-position: 16.6667% 50%; }
-    .mascot-2 { background-position: 33.3333% 50%; }
-    .mascot-3 { background-position: 50% 50%; }
-    .mascot-4 { background-position: 66.6667% 50%; }
-    .mascot-5 { background-position: 83.3333% 50%; }
-    .mascot-6 { background-position: 100% 50%; }
+    .header-mascot:nth-child(2) {
+      background-position:50% 50%; animation-delay:-.8s; transform:translateY(5px);
+    }
+    .header-mascot:nth-child(3) {
+      background-position:100% 50%; animation-delay:-1.6s; transform:translateY(-3px);
+    }
     .brand-mascot {
-      display: block; width: 52px; height: 52px; flex: 0 0 52px;
-      background-size: 700% 100%; background-position: 0% 50%;
-      border-radius: 50%; filter: drop-shadow(0 3px 5px rgba(255, 140, 190, .3));
-      animation: mascot-float 3.2s ease-in-out infinite;
+      width:54px; height:54px; flex:0 0 54px;
+      background-position:0% 50%; border-radius:50%;
+      filter:drop-shadow(0 3px 6px rgba(255,140,190,.35));
     }
-    .map-man {
-      position: absolute; z-index: 5; pointer-events: none;
-      left: 18px; bottom: 66px; width: 138px; height: 190px;
-      filter: drop-shadow(0 5px 7px rgba(25, 4, 18, .38));
-      opacity: .98;
+    .squish-trigger:focus-visible {
+      outline:2px solid #f9a8d4; outline-offset:4px; border-radius:18px;
     }
-    @keyframes mascot-float {
-      0%, 100% { translate: 0 0; }
-      50% { translate: 0 -5px; }
+    .squish-trigger.is-squishing {
+      animation:mascot-squish 680ms cubic-bezier(.2,.8,.25,1) both;
     }
-    @media (max-width: 1023px) {
-      .mascot-parade { display: flex; left: 39%; right: 22%; top: 7px; height: 48px; gap: 1px; }
-      .header-mascot { flex-basis: 40px; width: 40px; height: 40px; }
-      .brand-mascot { width: 42px; height: 42px; flex-basis: 42px; }
-      .map-man { width: 100px; height: 138px; left: 5px; bottom: 58px; }
+    @keyframes mascot-idle {
+      0%,100% { translate:0 0; }
+      50% { translate:0 -5px; }
     }
-    @media (max-width: 640px) {
-      .mascot-parade { display: none; }
+    @keyframes mascot-squish {
+      0% { transform:scale(1,1); }
+      16% { transform:scale(1.22,.78); }
+      32% { transform:scale(.82,1.18); }
+      48% { transform:scale(1.12,.9); }
+      66% { transform:scale(.94,1.07); }
+      82% { transform:scale(1.03,.98); }
+      100% { transform:scale(1,1); }
     }
-    @media (prefers-reduced-motion: reduce) {
-      .header-mascot, .brand-mascot { animation: none; }
+    @media (max-width:1023px) {
+      .mascot-parade { left:38%; right:23%; top:7px; height:48px; gap:4px; }
+      .header-mascot { flex-basis:42px; width:42px; height:42px; }
+      .brand-mascot { width:44px; height:44px; flex-basis:44px; }
+    }
+    @media (max-width:640px) {
+      .mascot-parade { display:none; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .header-mascot,.brand-mascot { animation:none; }
+      .squish-trigger.is-squishing { animation:none; }
     }
 
   </style>
@@ -176,14 +174,14 @@
 
   <!-- APP HEADER (상단 높이 고정) -->
   <header class="glass-card sticky top-0 z-50 relative border-b border-pink-500/30 shadow-lg shadow-pink-950/40 flex-none h-16">
-    <div class="mascot-parade" aria-hidden="true"><span class="header-mascot mascot-1"></span><span class="header-mascot mascot-2"></span><span class="header-mascot mascot-3"></span><span class="header-mascot mascot-4"></span><span class="header-mascot mascot-5"></span><span class="header-mascot mascot-6"></span></div>
+    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="세 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative z-10">
       <div class="flex justify-between items-center h-full">
         
         <!-- Logo & Character & Title -->
         <div class="flex items-center space-x-3">
           <!-- 두 번째 사진 캐릭터 배경 투명화 추가 (좌측 상단) -->
-          <span class="brand-mascot" aria-hidden="true"></span>
+          <button type="button" class="brand-mascot squish-trigger" aria-label="로고 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button>
           <div>
             <h1 class="text-base sm:text-lg font-extrabold text-white tracking-tight leading-tight neon-text-glow">광진구 클린거리 길잡이</h1>
             <p class="text-[11px] text-pink-300 hidden sm:block">공공 가로쓰레기통 위치 검색 및 설치 현황 분석</p>
@@ -471,6 +469,17 @@
         updateStatCards();
       });
     };
+
+    function squishMascot(element) {
+      if (!element) return;
+      element.classList.remove('is-squishing');
+      void element.offsetWidth;
+      element.classList.add('is-squishing');
+      element.onanimationend = function() {
+        this.classList.remove('is-squishing');
+        this.onanimationend = null;
+      };
+    }
 
     function switchTab(tabName) {
       document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
