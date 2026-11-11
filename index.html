@@ -44,7 +44,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     html, body {
@@ -54,10 +54,13 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      /* 첫 번째 첨부 이미지(별 CD) 배경 설정 */
-      background: linear-gradient(rgba(18, 2, 14, 0.75), rgba(18, 2, 14, 0.85)), url('https://chaewon619.github.io/-hyfl/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C.jpg') center/cover fixed no-repeat;
-      color: #fce7f3;
+      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+      background-image: linear-gradient(rgba(24, 15, 22, 0.28), rgba(24, 15, 22, 0.36)), url('./assets/site-wallpaper.webp');
+      background-position: center center;
+      background-size: 100% auto;
+      background-attachment: fixed;
+      background-repeat: repeat-y;
+      color: #fff7ed;
     }
 
     .custom-scrollbar::-webkit-scrollbar {
@@ -81,14 +84,12 @@
     .neon-text-glow {
       text-shadow: 0 0 8px rgba(255, 0, 127, 0.8), 0 0 15px rgba(255, 0, 127, 0.5);
     }
-    .neon-box-glow {
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.25), inset 0 0 15px rgba(255, 0, 127, 0.1);
-    }
+    .neon-text-glow, .neon-box-glow { text-shadow: none !important; box-shadow: none !important; }
     .glass-card {
-      background: rgba(30, 7, 26, 0.75);
+      background: rgba(38, 20, 32, 0.84);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 0, 127, 0.25);
+      border: 1px solid rgba(255, 235, 220, 0.28);
     }
 
     /* 말랑한 캐릭터 */
@@ -108,8 +109,8 @@
 
     /* Three mascots supplied by the user; Will Smith remains on the map. */
     .mascot-parade {
-      position:absolute; left:35%; right:31%; top:-2px; height:72px;
-      display:flex; align-items:center; justify-content:center; gap:12px;
+      position:absolute; left:33%; right:27%; top:-2px; height:72px;
+      display:flex; align-items:center; justify-content:center; gap:8px;
       pointer-events:auto; z-index:11; overflow:visible;
     }
     .header-mascot, .brand-mascot {
@@ -125,6 +126,18 @@
       flex:0 0 58px; width:58px; height:58px;
       background-position:0% 50%;
     }
+    .header-mascot-extra {
+      display:block; flex:0 0 58px; width:58px; height:58px;
+      padding:0; border:0; background-color:transparent;
+      background-repeat:no-repeat; background-position:center; background-size:contain;
+      cursor:pointer; transform-origin:center center;
+      filter:drop-shadow(0 4px 6px rgba(255,145,190,.38));
+      animation:mascot-idle 3.1s ease-in-out infinite;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .mascot-axolotl { background-image:url('./assets/mascot-axolotl.webp'); animation-delay:-2.1s; }
+    .mascot-hedgehog { background-image:url('./assets/mascot-hedgehog.webp'); animation-delay:-2.7s; }
+
     .header-mascot:nth-child(2) {
       background-position:50% 50%; animation-delay:-.8s; transform:translateY(5px);
     }
@@ -165,13 +178,14 @@
     @media (max-width:1023px) {
       .mascot-parade { left:38%; right:23%; top:7px; height:48px; gap:4px; }
       .header-mascot { flex-basis:42px; width:42px; height:42px; }
+      .header-mascot-extra { flex-basis:42px; width:42px; height:42px; }
       .brand-mascot { width:44px; height:44px; flex-basis:44px; }
     }
     @media (max-width:640px) {
       .mascot-parade { display:none; }
     }
     @media (prefers-reduced-motion:reduce) {
-      .header-mascot,.brand-mascot { animation:none; }
+      .header-mascot,.header-mascot-extra,.brand-mascot { animation:none; }
       .squish-trigger.is-squishing { animation:none; }
     }
 
@@ -181,7 +195,7 @@
 
   <!-- APP HEADER (상단 높이 고정) -->
   <header class="glass-card sticky top-0 z-50 relative border-b border-pink-500/30 shadow-lg shadow-pink-950/40 flex-none h-16">
-    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="세 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
+    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="세 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-axolotl squish-trigger" aria-label="새 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-hedgehog squish-trigger" aria-label="고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative z-10">
       <div class="flex justify-between items-center h-full">
         
@@ -582,7 +596,7 @@
         border-radius: 12px;
         color: white;
         min-width: 190px;
-        font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+        font-family: 'Jua', 'Noto Sans KR', sans-serif;
       `;
 
       overlayContent.innerHTML = `
