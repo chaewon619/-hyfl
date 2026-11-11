@@ -138,6 +138,16 @@
     .mascot-axolotl { background-image:url('./assets/mascot-axolotl.webp'); animation-delay:-2.1s; }
     .mascot-hedgehog { background-image:url('./assets/mascot-hedgehog.webp'); animation-delay:-2.7s; }
 
+    /* Newly supplied blue character */
+    .mascot-blue {
+      background-image:url('./assets/mascot-blue.webp');
+      background-position:center;
+      background-size:contain;
+      background-repeat:no-repeat;
+      animation-delay:-1.2s;
+    }
+
+
     .header-mascot:nth-child(2) {
       background-position:50% 50%; animation-delay:-.8s; transform:translateY(5px);
     }
@@ -348,7 +358,7 @@
 
   <!-- APP HEADER (상단 높이 고정) -->
   <header class="glass-card sticky top-0 z-50 relative border-b border-pink-500/30 shadow-lg shadow-pink-950/40 flex-none h-16">
-    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="세 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-axolotl squish-trigger" aria-label="새 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-hedgehog squish-trigger" aria-label="고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
+    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="세 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-axolotl squish-trigger" aria-label="새 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-hedgehog squish-trigger" aria-label="고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-blue squish-trigger" aria-label="파란색 고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative z-10">
       <div class="flex justify-between items-center h-full">
         
