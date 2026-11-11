@@ -189,6 +189,159 @@
       .squish-trigger.is-squishing { animation:none; }
     }
 
+  
+    /* Retro desktop + pixel-window theme */
+    body {
+      background-color: #19a9e8 !important;
+      background-image:
+        linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+        linear-gradient(135deg, #21b4ed 0%, #1399d8 100%) !important;
+      background-size: 18px 18px, 18px 18px, auto !important;
+      background-attachment: fixed;
+      color: #35127f;
+    }
+
+    /* Window frame for search/result cards */
+    #view-map .glass-card {
+      position: relative;
+      overflow: hidden;
+      background: #ffb4e8 !important;
+      border: 4px solid #42149a !important;
+      border-radius: 3px !important;
+      box-shadow: 6px 6px 0 rgba(55, 15, 132, .92) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    #view-map .glass-card::before {
+      content: "프로젝트 창";
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      box-sizing: border-box;
+      padding: 2px 76px 2px 12px;
+      background: #42149a;
+      color: #ffc9ef;
+      font: 12px 'Jua', sans-serif;
+      line-height: 20px;
+      letter-spacing: .2px;
+      border-bottom: 3px solid #260b70;
+    }
+    #view-map .glass-card::after {
+      content: "－  □  ×";
+      position: absolute;
+      z-index: 4;
+      top: 1px;
+      right: 7px;
+      color: #42149a;
+      background: #f5a8e3;
+      font: bold 15px/19px 'Jua', sans-serif;
+      letter-spacing: 1px;
+      padding: 0 4px;
+      pointer-events: none;
+    }
+    #view-map > div:first-child > .glass-card:first-child {
+      padding-top: 31px !important;
+    }
+    #view-map > div:first-child > .glass-card:first-child::before {
+      content: "검색 및 필터";
+    }
+    #view-map > div:first-child > .glass-card:nth-child(2) {
+      padding-top: 27px !important;
+    }
+    #view-map > div:first-child > .glass-card:nth-child(2)::before {
+      content: "검색 결과 목록";
+    }
+    #view-map > div:first-child > .glass-card:nth-child(2) > div:first-child {
+      background: #20a9e8 !important;
+      border-bottom: 3px solid #42149a !important;
+      color: #35127f !important;
+    }
+    #view-map > div:first-child > .glass-card:nth-child(2) > div:first-child * {
+      color: #35127f !important;
+    }
+
+    /* Map as a matching application window */
+    #view-map > div:last-child {
+      border: 4px solid #42149a !important;
+      border-radius: 3px !important;
+      box-shadow: 7px 7px 0 rgba(55, 15, 132, .92) !important;
+      background: #ffb4e8;
+      padding-top: 28px;
+      box-sizing: border-box;
+    }
+    #view-map > div:last-child::before {
+      content: "광진구 쓰레기통 위치 지도";
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      box-sizing: border-box;
+      padding: 2px 82px 2px 12px;
+      background: #42149a;
+      color: #ffc9ef;
+      font: 12px/20px 'Jua', sans-serif;
+      border-bottom: 3px solid #260b70;
+    }
+    #view-map > div:last-child::after {
+      content: "－  □  ×";
+      position: absolute;
+      z-index: 6;
+      top: 1px;
+      right: 7px;
+      color: #42149a;
+      background: #f5a8e3;
+      font: bold 15px/19px 'Jua', sans-serif;
+      letter-spacing: 1px;
+      padding: 0 4px;
+      pointer-events: none;
+    }
+    #map {
+      height: calc(100% - 28px) !important;
+      min-height: 340px;
+    }
+
+    /* Window-style search controls */
+    #search-input, #dong-select, #type-select {
+      background: #fff0fa !important;
+      color: #35127f !important;
+      border: 2px solid #42149a !important;
+      border-radius: 2px !important;
+    }
+    #search-input::placeholder { color: #8d68a8 !important; }
+    #view-map button {
+      border-radius: 2px;
+    }
+    #view-map .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #42149a;
+      border-radius: 0;
+    }
+    #view-map .map-man { filter: drop-shadow(0 4px 4px rgba(45,12,100,.2)); }
+
+    /* Keep the header compact while matching the desktop colors */
+    header.glass-card {
+      background: #ffb4e8 !important;
+      border: 0 !important;
+      border-bottom: 4px solid #42149a !important;
+      box-shadow: 0 5px 0 rgba(55,15,132,.35) !important;
+      backdrop-filter: none !important;
+    }
+    header h1 { color: #35127f !important; text-shadow: none !important; }
+    header p { color: #6735a8 !important; }
+    .nav-tab.active-tab {
+      background: #20a9e8 !important;
+      color: #35127f !important;
+      border: 2px solid #42149a !important;
+      box-shadow: 3px 3px 0 #42149a !important;
+    }
+    .nav-tab:not(.active-tab) { color: #42149a !important; }
+    .nav-tab:not(.active-tab):hover { background: #f5a8e3 !important; }
+
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
