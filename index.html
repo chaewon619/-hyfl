@@ -216,6 +216,11 @@
       background-image:url('./assets/map-man.webp');
       background-repeat:no-repeat; background-size:contain; background-position:center bottom;
       filter:drop-shadow(0 5px 7px rgba(25,4,18,.38)); opacity:.98;
+      transition:left 680ms cubic-bezier(.2,.8,.25,1), top 680ms cubic-bezier(.2,.8,.25,1);
+      will-change:left, top;
+    }
+    .map-man.is-pointing {
+      filter:drop-shadow(0 5px 9px rgba(25,4,18,.42));
     }
     .squish-trigger:focus-visible {
       outline:2px solid #f9a8d4; outline-offset:4px; border-radius:18px;
@@ -550,7 +555,7 @@
       <!-- Right Panel: Interactive Map (화면 안 스크롤 없이 가득 차게 설정) -->
       <div class="lg:col-span-8 flex flex-col h-full min-h-0 rounded-xl overflow-hidden border border-pink-500/40 shadow-xl relative">
         <div id="map" class="w-full h-full"></div>
-        <div class="map-man" aria-hidden="true"></div>
+        <div id="map-man" class="map-man" aria-hidden="true"></div>
         
         <!-- Floating Map Legend -->
         <div class="absolute bottom-3 left-3 z-[10] glass-card p-2.5 rounded-lg border border-pink-500/40 text-[11px] space-y-1">
@@ -856,6 +861,40 @@
       });
 
       map.panTo(position);
+      // After the map finishes moving, place Will Smith just to the left of the selected marker.
+      kakao.maps.event.addListenerOnce(map, 'idle', function() {
+        moveMapManTo(position);
+      });
+    }
+
+    function moveMapManTo(position) {
+      const man = document.getElementById('map-man');
+      const panel = document.getElementById('map');
+      if (!man || !panel || !map) return;
+
+      const projection = map.getProjection();
+      const point = projection.containerPointFromCoords(position);
+      const panelWidth = panel.clientWidth;
+      const panelHeight = panel.clientHeight;
+      const manWidth = man.offsetWidth || 138;
+      const manHeight = man.offsetHeight || 190;
+
+      // Start each new gesture from the character's usual lower-left position.
+      const startTop = Math.max(8, panelHeight - 66 - manHeight);
+      man.style.bottom = 'auto';
+      man.style.left = '18px';
+      man.style.top = startTop + 'px';
+      man.classList.remove('is-pointing');
+      void man.offsetWidth;
+
+      // The supplied pose faces right, so keep the character on the marker's left.
+      const targetLeft = Math.max(8, Math.min(panelWidth - manWidth - 8, point.x - manWidth - 14));
+      const targetTop = Math.max(8, Math.min(panelHeight - manHeight - 8, point.y - manHeight * 0.52));
+      requestAnimationFrame(function() {
+        man.classList.add('is-pointing');
+        man.style.left = targetLeft + 'px';
+        man.style.top = targetTop + 'px';
+      });
     }
 
     function closeOverlay() {
