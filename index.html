@@ -192,7 +192,9 @@
       .brand-mascot { width:44px; height:44px; flex-basis:44px; }
     }
     @media (max-width:640px) {
-      .mascot-parade { display:none; }
+      .mascot-parade { display:flex; left:8px; right:8px; top:4px; height:38px; gap:2px; justify-content:center; }
+      .header-mascot { flex-basis:30px; width:30px; height:30px; }
+      .header-mascot-extra { flex-basis:30px; width:30px; height:30px; }
     }
     @media (prefers-reduced-motion:reduce) {
       .header-mascot,.header-mascot-extra,.brand-mascot { animation:none; }
