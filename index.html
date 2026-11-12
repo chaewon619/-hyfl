@@ -109,8 +109,8 @@
 
     /* Three mascots supplied by the user; Will Smith remains on the map. */
     .mascot-parade {
-      position:absolute; left:33%; right:27%; top:-2px; height:72px;
-      display:flex; align-items:center; justify-content:center; gap:8px;
+      position:absolute; left:30%; right:18%; top:-2px; height:72px;
+      display:flex; align-items:center; justify-content:center; gap:5px;
       pointer-events:auto; z-index:11; overflow:visible;
     }
     .header-mascot, .brand-mascot {
@@ -188,10 +188,11 @@
     }
     .mascot-axolotl { background-image:url('./assets/mascot-axolotl.webp'); animation-delay:-2.1s; }
     .mascot-hedgehog { background-image:url('./assets/mascot-hedgehog.webp'); animation-delay:-2.7s; }
+    .mascot-yellow { background-image:url('./assets/mascot-yellow-user.webp'); animation-delay:-1.9s; }
 
     /* Newly supplied blue character */
     .mascot-blue {
-      background-image:url('./assets/mascot-blue.webp');
+      background-image:url('./assets/mascot-blue-user.webp');
       background-position:center;
       background-size:contain;
       background-repeat:no-repeat;
@@ -242,7 +243,7 @@
       100% { transform:scale(1,1); }
     }
     @media (max-width:1023px) {
-      .mascot-parade { left:38%; right:23%; top:7px; height:48px; gap:4px; }
+      .mascot-parade { left:34%; right:16%; top:7px; height:48px; gap:3px; }
       .header-mascot { flex-basis:42px; width:42px; height:42px; }
       .header-mascot-extra { flex-basis:42px; width:42px; height:42px; }
       .brand-mascot { width:44px; height:44px; flex-basis:44px; }
@@ -416,7 +417,7 @@
 
   <!-- APP HEADER (상단 높이 고정) -->
   <header class="glass-card sticky top-0 z-50 relative border-b border-pink-500/30 shadow-lg shadow-pink-950/40 flex-none h-16">
-    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot mascot-speech-trigger squish-trigger" aria-label="캐릭터를 눌러 쓰레기 줄이기 메시지 보기" aria-expanded="false" data-speech="쓰레기를 버리자!" onclick="toggleMascotSpeech(this)"></button><button type="button" class="header-mascot-extra mascot-axolotl squish-trigger" aria-label="새 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-hedgehog squish-trigger" aria-label="고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-blue squish-trigger" aria-label="파란색 고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
+    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot mascot-speech-trigger squish-trigger" aria-label="메시지 보기" aria-expanded="false" data-speech="쓰레기를 버리자!" onclick="toggleMascotSpeech(this)"></button><button type="button" class="header-mascot-extra mascot-axolotl squish-trigger" aria-label="도롱뇽 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-hedgehog squish-trigger" aria-label="고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-blue mascot-speech-trigger squish-trigger" aria-label="파란 캐릭터 메시지 보기" aria-expanded="false" data-speech="쓰레기를 버리라고!!" onclick="toggleMascotSpeech(this)"></button><button type="button" class="header-mascot-extra mascot-yellow mascot-speech-trigger squish-trigger" aria-label="노란 캐릭터 메시지 보기" aria-expanded="false" data-speech="사부님!" onclick="toggleMascotSpeech(this)"></button></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative z-10">
       <div class="flex justify-between items-center h-full">
         
