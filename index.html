@@ -860,11 +860,13 @@
         yAnchor: 1.2
       });
 
-      map.panTo(position);
-      // After the map finishes moving, place Will Smith just to the left of the selected marker.
-      kakao.maps.event.addListenerOnce(map, 'idle', function() {
+      // Kakao Maps uses addListener/removeListener for one-time idle handling.
+      const onMapIdle = function() {
+        kakao.maps.event.removeListener(map, 'idle', onMapIdle);
         moveMapManTo(position);
-      });
+      };
+      kakao.maps.event.addListener(map, 'idle', onMapIdle);
+      map.panTo(position);
     }
 
     function moveMapManTo(position) {
