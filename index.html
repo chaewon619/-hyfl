@@ -126,6 +126,57 @@
       flex:0 0 58px; width:58px; height:58px;
       background-position:0% 50%;
     }
+
+    /* Click the blue-bow mascot to show its clean-street message. */
+    .mascot-speech-trigger { position:relative; }
+    .mascot-speech-trigger::after {
+      content:attr(data-speech);
+      position:absolute;
+      left:50%;
+      top:calc(100% + 9px);
+      transform:translateX(-50%) translateY(-5px) scale(.92);
+      transform-origin:top center;
+      padding:8px 13px;
+      white-space:nowrap;
+      color:#35127f;
+      background:#fff4fb;
+      border:3px solid #42149a;
+      box-shadow:4px 4px 0 #42149a;
+      border-radius:3px;
+      font:14px 'Jua','Noto Sans KR',sans-serif;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease, visibility .18s;
+      z-index:30;
+    }
+    .mascot-speech-trigger::before {
+      content:"";
+      position:absolute;
+      left:50%;
+      top:calc(100% + 3px);
+      width:9px;
+      height:9px;
+      background:#fff4fb;
+      border-top:3px solid #42149a;
+      border-left:3px solid #42149a;
+      transform:translateX(-50%) rotate(45deg);
+      opacity:0;
+      visibility:hidden;
+      z-index:31;
+    }
+    .mascot-speech-trigger.show-speech::after {
+      opacity:1;
+      visibility:visible;
+      transform:translateX(-50%) translateY(0) scale(1);
+    }
+    .mascot-speech-trigger.show-speech::before {
+      opacity:1;
+      visibility:visible;
+    }
+    @media (max-width:640px) {
+      .mascot-speech-trigger::after { font-size:12px; padding:7px 10px; }
+    }
     .header-mascot-extra {
       display:block; flex:0 0 58px; width:58px; height:58px;
       padding:0; border:0; background-color:transparent;
@@ -360,7 +411,7 @@
 
   <!-- APP HEADER (상단 높이 고정) -->
   <header class="glass-card sticky top-0 z-50 relative border-b border-pink-500/30 shadow-lg shadow-pink-950/40 flex-none h-16">
-    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="세 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-axolotl squish-trigger" aria-label="새 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-hedgehog squish-trigger" aria-label="고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-blue squish-trigger" aria-label="파란색 고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
+    <div class="mascot-parade" aria-label="마스코트 캐릭터"><button type="button" class="header-mascot squish-trigger" aria-label="첫 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot squish-trigger" aria-label="두 번째 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot mascot-speech-trigger squish-trigger" aria-label="캐릭터를 눌러 쓰레기 줄이기 메시지 보기" aria-expanded="false" data-speech="쓰레기를 버리자!" onclick="toggleMascotSpeech(this)"></button><button type="button" class="header-mascot-extra mascot-axolotl squish-trigger" aria-label="새 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-hedgehog squish-trigger" aria-label="고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button><button type="button" class="header-mascot-extra mascot-blue squish-trigger" aria-label="파란색 고슴도치 캐릭터 말랑하게 움직이기" onclick="squishMascot(this)"></button></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative z-10">
       <div class="flex justify-between items-center h-full">
         
@@ -665,6 +716,22 @@
         this.classList.remove('is-squishing');
         this.onanimationend = null;
       };
+    }
+
+    let mascotSpeechTimer = null;
+    function toggleMascotSpeech(element) {
+      if (!element) return;
+      squishMascot(element);
+      const isOpen = element.classList.toggle('show-speech');
+      element.setAttribute('aria-expanded', String(isOpen));
+      if (mascotSpeechTimer) clearTimeout(mascotSpeechTimer);
+      if (isOpen) {
+        mascotSpeechTimer = setTimeout(() => {
+          element.classList.remove('show-speech');
+          element.setAttribute('aria-expanded', 'false');
+          mascotSpeechTimer = null;
+        }, 3200);
+      }
     }
 
     function switchTab(tabName) {
